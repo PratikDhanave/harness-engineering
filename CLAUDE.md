@@ -398,11 +398,9 @@ on 21 Aug 2026 at the author's request. A factual provenance citation stays in
 The full blueprint lives in `docs/azure-implementation-plan.md`; **read it first** when starting
 any implementation work. It is the source of truth for architecture and the lesson-by-lesson plan.
 
-Remaining work is tracked *outside* the repo, on the [Harness Engineering project
-board](https://github.com/users/pratikbalasahebdhanave/projects/1) — 12 issues covering the
-un-swapped seams (Content Safety, Cosmos DB, Code Interpreter, AI Search, triage handoffs,
-Magentic, `RequestInfoExecutor`), observability, IaC/deployment, and the agent-framework
-version-bump protocol. Check it before proposing "what's next"; there is no TODO list in-tree.
+Remaining work is the **Roadmap table in `README.md`** — 12 items, each one a seam with a local
+implementation and no managed one. It replaced a project board on a private account that returned
+404 for everyone else once this repo went public. Check it before proposing "what's next".
 
 ## Language note (important)
 

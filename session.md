@@ -4,7 +4,10 @@
 > (only `README.md` + an Azure plan doc) to a **local-first implementation of all 7
 > harness-engineering patterns**, with design docs, an adversarial audit, and remediation.
 >
-> Repo: `PratikDhanave/harness-engineering-pratice` (private) · Language: Python 3.11 · Tooling: `uv` + `pytest`
+> Historical record of the 6-11 Jul 2026 build session, kept as-is. It names the scratch repo it
+> was written in (`harness-engineering-pratice`, private) — this repository is the descendant of
+> that work, and the counts and commit hashes below are the ones from that week, not current.
+> Language: Python 3.11 · Tooling: `uv` + `pytest`
 > Span: 2026-07-06 → 2026-07-11 · Author of all commits: PratikDhanave
 
 ---

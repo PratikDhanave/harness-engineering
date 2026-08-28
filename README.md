@@ -1102,7 +1102,27 @@ harness-engineering/
 
 ## Roadmap
 
-Tracked on the [Harness Engineering project board](https://github.com/users/pratikbalasahebdhanave/projects/1) — 12 issues covering the remaining seam swaps (Content Safety, Cosmos DB, Code Interpreter, AI Search, triage handoffs, Magentic, `RequestInfoExecutor`), observability, IaC/deployment, and the agent-framework version-bump protocol.
+Twelve items remain. Every one is a seam that has a local implementation and not yet a managed
+one — which is the whole point of writing the leak down: **the gap a docstring names is the work
+item.**
+
+| | Swap | The seam today | Named in |
+|---|---|---|---|
+| 1 | Content Safety **Prompt Shields** | `guardrails.py` + `safety/` — heuristic substring matching | `docs/safety-layer.md` |
+| 2 | **Cosmos DB** checkpoints | `durable/sqlite_store.py` — one local file, no replication | `durable/checkpoint.py` |
+| 3 | **Code Interpreter** | `sandbox.py` — a subprocess, which is not a security boundary | `sandbox.py` |
+| 4 | **AI Search** long-term memory | `memory/knowledge.py` — keyword overlap, no embeddings | `memory/knowledge.py` |
+| 5 | Agent Service **managed threads** | `memory/thread.py` — local SQLite, no auth, unbounded growth | `memory/thread.py` |
+| 6 | LLM **summarisation** | `memory/summarize.py` — keeps the ends, drops the middle | `memory/summarize.py` |
+| 7 | A real **triage agent** | `orchestration/router.py` — a keyword table with no notion of meaning | `orchestration/router.py` |
+| 8 | **Magentic** orchestration | `orchestration/supervisor.py` — fixed decompose, no planner | `af/supervise.py` |
+| 9 | **`RequestInfoExecutor`** routing | `hitl.py` — the approver is whoever calls `resume()` | `hitl.py` |
+| 10 | **OpenTelemetry** → App Insights | structured logging only | `docs/architecture.md` |
+| 11 | **IaC + deployment** to Container Apps | nothing — it has never been deployed | `docs/azure-implementation-plan.md` |
+| 12 | An agent-framework **version-bump protocol** | a NOTE in `pyproject.toml` and a matched-set rule | `pyproject.toml` |
+
+Also open, and smaller: no linter or type-check in CI, and `scripts/` — the talk's toolchain, and
+the largest body of code here — has no tests of its own.
 
 ## Status & caveats
 
