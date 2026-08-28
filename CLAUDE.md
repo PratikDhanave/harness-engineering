@@ -373,7 +373,7 @@ Then verify against the URL rather than trusting the CLI — it has reported fai
 deployment that succeeded, and success on one that never went live:
 
 ```bash
-curl -s <url>/slide.js | grep -o 'notes: "[^"]' | wc -l   # MUST be 0 — notes are confidential
+curl -s <url>/slide.js | grep -o 'notes: "[^"]' | wc -l   # MUST be 0 — presenter-only, not for readers
 ```
 
 Durable-execution and HITL tests write checkpoints to a local `.harness/` SQLite store (gitignored)
@@ -441,7 +441,11 @@ Decisions already made — follow these unless the user says otherwise:
 - **Explicit modes fail loud.** A mode the operator asked for must never be silently swapped for
   another (a `.env` flow that quietly answered from the stub is exactly the bug this rule came
   from). Auto-detect only applies when `HARNESS_AGENT_MODE` is unset.
-- **This repo is handed out at workshops.** The confidentiality notice was removed on 26 Aug 2026 when it became teaching material, and the demo examples were made domain-neutral at the same time — no client terminology in tracked files. Speaker notes are still stripped from the published bundle (they are presenter-only, not secret), which is what the `notes:` check above is for.
+- **This repo is handed out at workshops.** The confidentiality notice was removed on 26 Aug 2026 when it became teaching material, and the demo examples were made domain-neutral at the same time — no client terminology in tracked files. Speaker notes are **presenter-only, not secret** — that is the settled position, and the repo
+  used to contradict itself about it. They are stripped from the published *web bundle* (blanked,
+  not deleted, so the array shape holds) because a reader of the site is not the presenter. They
+  ship in full in `docs/presentation/slide.js`, which is public. If that ever needs to change, the
+  strip has to move into the deck source, not just the bundle.
 
 ## Maintaining this file
 

@@ -1079,6 +1079,8 @@ harness-engineering/
 ├── docs/                       # architecture, implementation plan, glossaries, diagrams
 │   ├── diagrams/               # archify repo map (interactive HTML + PNGs)
 │   └── presentation/           # conference deck (browser · pptx · pdf · web) + 5 archify diagrams
+├── shared/                     # FROZEN 21 Aug hand-out copy — not the current deck (see shared/README.md)
+├── public/                     # generated Vercel bundle; slide.js here has notes blanked
 ├── scripts/demo.sh             # the end-to-end demo behind `make demo`
 ├── .github/workflows/ci.yml    # CI: uv + pytest, no secrets needed
 ├── Makefile                    # install · model · test · run · run-local · demo

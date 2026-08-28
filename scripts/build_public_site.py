@@ -41,7 +41,7 @@ def strip_notes(js: str) -> str:
     `s` key — so publishing slide.js verbatim publishes the whole speaker
     script to anyone with the URL. The notes carry internal delivery framing
     (audience-swap guidance, invariant IDs, client-room wording); this repo is
-    confidential. Blank them rather than deleting the key, so the array shape
+    presenter-only. Blank them rather than deleting the key, so the array shape
     and the engine's `SLIDES[cur].notes` read both still work.
     """
     return re.sub(r'notes:\s*"(?:[^"\\]|\\.)*"', 'notes: ""', js)
