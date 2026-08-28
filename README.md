@@ -351,20 +351,35 @@ make run        # serve the API on :8000
 make help       # every target
 ```
 
-`make demo` boots the API and shows the harness holding the line:
+`make demo` boots the API and shows the harness holding the line — three disguises of the same
+attack, then a crash it survives:
 
 ```text
+▶ POST /chat — a normal message passes the guardrail
+    "guardrail": "passed"
+
 ▶ POST /chat — a prompt injection is hard-blocked
-{ "reply": "Request blocked by guardrail.",
-  "guardrail": "possible prompt injection: 'ignore previous instructions'" }
+    "guardrail": "possible prompt injection: 'ignore previous instructions'"
 
-▶ POST /chat — the injection disguised with a Cyrillic 'е' — folding still catches it
-{ "guardrail": "possible prompt injection (obfuscated): 'ignore previous instructions'" }
+▶ POST /chat — the injection disguised with a Cyrillic 'е' (homoglyph) — folding still catches it
+    "guardrail": "possible prompt injection (obfuscated): 'ignore previous instructions'"
 
-▶ durable execution — crash at step 3, then resume
-first run:  step-1, step-2, CRASH at step-3
-resume:     step-3 only — completed steps are never repeated
+▶ POST /chat — the same injection split letter-by-letter — squashing catches that too
+    "guardrail": "possible prompt injection (separated): 'ignore previous instructions'"
+
+▶ durable execution — crash at step 3, then resume: completed steps are NOT repeated
+first run — step-3 dies:
+  executing step-1
+  executing step-2
+  CRASH: step-3: simulated crash (rate limit)
+resume with the same run_id — steps 1–2 are skipped, only step-3 re-runs:
+  executing step-3
+  final state: {'step-1': 'done', 'step-2': 'done', 'step-3': 'done'}
 ```
+
+That transcript is copied from a real run, not written by hand. The three guardrail blocks are
+the same phrase three ways — plain, homoglyph, letter-split — which is the whole argument for why
+one substring check is not a guardrail.
 
 ## Run modes
 
