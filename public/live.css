@@ -195,6 +195,15 @@
   font: 600 .78em/1 var(--mono, monospace);
 }
 
+/* The deck's build-in animation is `rise ... both`, and a forwards fill leaves
+   the finished `transform: none` behind as an identity matrix on every direct
+   child of the active slide. Any transform makes an element the containing
+   block for its absolutely-positioned descendants, so `inset: 0` below was
+   resolving against this ~32px trigger row instead of the slide, and opening a
+   demo showed a clipped sliver at the bottom of the page. The host is a button,
+   already visible at rest, so it loses nothing by sitting the animation out. */
+.slide [data-demo] { animation: none; }
+
 .live-overlay {
   display: none; position: absolute; inset: 0; z-index: 40;
   align-items: center; justify-content: center; padding: 4vh 6vw;
