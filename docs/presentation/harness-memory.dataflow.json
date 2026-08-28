@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Memory Flow",
+    "subtitle": "Lesson 4 \u2014 capture, store, compress, recall",
+    "output": "harness-memory.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      940,
+      520
+    ]
+  },
+  "stages": [
+    {
+      "label": "Capture"
+    },
+    {
+      "label": "Store"
+    },
+    {
+      "label": "Compress"
+    },
+    {
+      "label": "Recall"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "turns",
+      "type": "frontend",
+      "label": "Chat turns",
+      "stage": 0,
+      "row": 1,
+      "sublabel": "user + agent"
+    },
+    {
+      "id": "thread",
+      "type": "database",
+      "label": "Thread Store",
+      "stage": 1,
+      "row": 0,
+      "sublabel": "append-only"
+    },
+    {
+      "id": "knowledge",
+      "type": "database",
+      "label": "Knowledge Store",
+      "stage": 1,
+      "row": 2,
+      "sublabel": "long-term facts"
+    },
+    {
+      "id": "summariser",
+      "type": "backend",
+      "label": "Summariser",
+      "stage": 2,
+      "row": 0,
+      "sublabel": "head + tail"
+    },
+    {
+      "id": "context",
+      "type": "cloud",
+      "label": "Model Context",
+      "stage": 3,
+      "row": 1,
+      "sublabel": "replayed to agent"
+    }
+  ],
+  "flows": [
+    {
+      "id": "capture-turns",
+      "from": "turns",
+      "to": "thread",
+      "label": "every turn",
+      "variant": "emphasis"
+    },
+    {
+      "id": "capture-facts",
+      "from": "turns",
+      "to": "knowledge",
+      "label": "salient facts",
+      "classification": "keyword index"
+    },
+    {
+      "id": "long-history",
+      "from": "thread",
+      "to": "summariser",
+      "label": "long transcript"
+    },
+    {
+      "id": "rollup",
+      "from": "summariser",
+      "to": "context",
+      "label": "roll-up",
+      "variant": "emphasis",
+      "classification": "lossy by design"
+    },
+    {
+      "id": "recall-facts",
+      "from": "knowledge",
+      "to": "context",
+      "label": "recalled facts"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Azure mapping",
+      "items": [
+        "Thread Store \u2192 Agent Service managed threads",
+        "Knowledge Store \u2192 Azure AI Search",
+        "Summariser \u2192 Azure OpenAI call"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "State the leak",
+      "items": [
+        "roll-up keeps head + tail, drops the middle",
+        "raw thread stays recoverable in full",
+        "short threads replay verbatim \u2014 no roll-up"
+      ]
+    }
+  ]
+}

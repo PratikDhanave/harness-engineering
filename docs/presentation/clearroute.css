@@ -1,0 +1,82 @@
+/* clearroute.css — ClearRoute skin for the Harness Engineering deck.
+ *
+ * Loaded AFTER slide.css, which is almost entirely var()-driven; this file
+ * re-points those variables at the ClearRoute palette and patches the handful
+ * of places slide.css hardcodes a Google colour. Content, engine and
+ * typography are unchanged — same SLIDES array in slide.js, same font stack.
+ *
+ * White paper, ClearRoute mint. Mint (#00E8AF) is bright, so it is used for
+ * FILLS and rules only; text and code use the deeper house green (#009167),
+ * which clears contrast on white. Same split the Google deck makes between
+ * --accent (fills) and --accent-dk (text).
+ *
+ * Open ./clearroute.html. Same keys as the light deck: ← → · o · s · f.
+ */
+
+:root {
+  --bg:        #ffffff;   /* clean white paper */
+  --surface:   #ffffff;   /* cards — separated by hairline, not fill */
+  --panel:     #f2f7f5;   /* inline code background, faint mint-grey */
+  --panel-2:   #e7edea;   /* progress track */
+  --ink:       #121a24;   /* headings — house navy, near-black on white */
+  --ink-soft:  #37414f;   /* body */
+  --muted:     #6e788a;   /* secondary — house muted, reads well on white */
+  --accent:    #00e8af;   /* ClearRoute mint — FILLS, bars, badges */
+  --accent-dk: #009167;   /* deeper house green — TEXT, code, kickers */
+  --accent-2:  #009167;
+  --good:      #009167;
+  --good-bg:   #e6faf4;
+  --good-bd:   #a8ebd6;
+  --warn:      #b06000;
+  --warn-bg:   #fef7e0;
+  --warn-bd:   #feefc3;
+  --line:      #e6eaf0;
+  --line-2:    #d6dde6;
+  --code-bg:   #ffffff;
+  --code-ink:  #121a24;
+  --shadow-sm: 0 1px 2px rgba(18,26,36,.08), 0 1px 3px rgba(18,26,36,.06);
+  --shadow-md: 0 1px 3px rgba(18,26,36,.12), 0 4px 12px rgba(18,26,36,.09);
+  /* Typography is deliberately NOT overridden: this deck keeps the Google
+     deck's font stack (--sans / --mono from slide.css) so the light and dark
+     decks are typographically identical and only the palette differs. To use
+     the house face instead, set --sans here to "Gotham", ... , sans-serif. */
+}
+
+/* --- live-code panels (live.css tokens) ----------------------------------
+   live.css defaults to the Google blues; re-point its five tokens and every
+   chip, caret, verdict and callout follows the house palette. */
+:root {
+  --live-tint:    #e6faf4;
+  --live-tint-bd: #a8ebd6;
+  --live-key:     #009167;
+  --live-ok:      #00e8af;   /* light on the dark output block */
+  --live-warn:    #f2b25b;
+}
+
+/* --- small marks need the deeper green; mint alone is too faint on white -- */
+ul.big li::before { background: var(--accent-dk); }
+.slide h2 .num { background: var(--accent-dk); color: #fff; }
+
+/* --- the few hardcoded Google values in slide.css ------------------------- */
+pre .c { color: #7b8794; }                      /* code comment */
+.arch .box.api { border-color: var(--accent-dk); background: #e6faf4; }
+.flow .node.model { border-color: var(--accent-dk); background: #e6faf4; }
+.flow .node.guard { border-color: #f9ab00; background: var(--warn-bg); }
+#notes { border-top-color: var(--accent-dk); }
+#progress-bar { background: linear-gradient(90deg, var(--accent), var(--accent-dk)); }
+
+/* --- inline SVG diagrams --------------------------------------------------
+   The diagrams are already drawn for white paper, so only the Google blues are
+   re-pointed at the ClearRoute greens. A CSS property always beats an SVG
+   presentation attribute, so no edit to the SVG source is needed. Mirrors the
+   .pptx generator's svg_map (scripts/deck_to_pptx.py). */
+.diagram svg [fill="#4285f4"],
+.diagram svg [fill="#1a73e8"],
+.diagram svg [fill="#188038"]   { fill: #009167; }
+.diagram svg [fill="#e8f0fe"],
+.diagram svg [fill="#e6f4ea"]   { fill: #e6faf4; }
+
+.diagram svg [stroke="#4285f4"],
+.diagram svg [stroke="#188038"] { stroke: #009167; }
+.diagram svg [stroke="#c9ddfc"],
+.diagram svg [stroke="#ceead6"] { stroke: #a8ebd6; }

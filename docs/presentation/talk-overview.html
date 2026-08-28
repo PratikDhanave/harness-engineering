@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Harness Engineering — Talk Overview</title>
+<style>
+  /* Google palette (matches the slide deck): Blue #4285F4, Green #188038, Google Grey, white paper. No red. */
+  :root {
+    --bg:#ffffff; --ink:#202124; --ink-soft:#3c4043; --muted:#5f6368;
+    --accent:#4285f4; --accent-dk:#1a73e8; --good:#188038; --good-bg:#e6f4ea; --good-bd:#ceead6;
+    --warn:#b06000; --warn-bg:#fef7e0; --line:#e8eaed; --line-2:#dadce0; --panel:#f1f3f4;
+    --sans:"Google Sans","Product Sans",Roboto,system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:"Roboto Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --shadow:0 1px 2px rgba(60,64,67,.10),0 1px 3px rgba(60,64,67,.08);
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+              -webkit-font-smoothing:antialiased; line-height:1.5; }
+  .page { max-width:840px; margin:0 auto; padding:42px 48px 48px; }
+
+  /* header */
+  .kicker { display:flex; align-items:center; gap:.6em; color:var(--accent-dk); font-weight:600;
+            font-size:15px; margin-bottom:14px; }
+  .kicker::before { content:""; width:28px; height:3px; background:var(--accent); border-radius:2px; }
+  h1 { font-size:38px; font-weight:500; letter-spacing:-.02em; margin:0 0 7px; line-height:1.08; }
+  .sub { font-size:18px; color:var(--muted); margin:0 0 12px; max-width:60ch; }
+  .meta-row { display:flex; flex-wrap:wrap; gap:8px 10px; padding-top:12px; border-top:1px solid var(--line); margin-top:2px; }
+  .chip { font:600 12.5px/1 var(--mono); color:var(--accent-dk); background:#e8f0fe; border:1px solid #d2e3fc;
+          border-radius:999px; padding:6px 11px; }
+  .chip.g { color:var(--good); background:var(--good-bg); border-color:var(--good-bd); }
+
+  /* sections */
+  section { margin-top:19px; }
+  h2 { font-size:15px; font-weight:700; color:var(--ink); text-transform:uppercase; letter-spacing:.05em;
+       margin:0 0 8px; display:flex; align-items:center; gap:.6em; }
+  h2::before { content:""; width:9px; height:9px; background:var(--accent); border-radius:2px; flex:none; }
+  p { margin:0 0 10px; color:var(--ink-soft); font-size:15.5px; max-width:66ch; }
+  p.lead { font-size:17px; color:var(--ink); }
+  strong { color:var(--ink); font-weight:600; }
+  em { color:var(--ink); font-style:italic; }
+  a { color:var(--accent-dk); text-decoration:none; }
+  code { font-family:var(--mono); font-size:.86em; background:var(--panel); border:1px solid var(--line-2);
+         border-radius:5px; padding:.05em .38em; color:var(--accent-dk); }
+
+  ul { margin:0 0 12px; padding:0; list-style:none; }
+  li { position:relative; padding-left:22px; margin:6px 0; color:var(--ink-soft); font-size:15.5px; max-width:66ch; }
+  li::before { content:""; position:absolute; left:0; top:.5em; width:7px; height:7px; background:var(--accent);
+               border-radius:2px; }
+
+  /* --- story: the obituary (four ways an agent dies) --- */
+  .deaths { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0 12px; }
+  .death { border:1px solid #feefc3; background:var(--warn-bg); border-radius:12px; padding:11px 13px 12px; }
+  .death h3 { margin:0 0 3px; font-size:15px; color:#7a4b00; display:flex; align-items:baseline; gap:.5em; }
+  .death h3 span { font:700 12px/1 var(--mono); color:var(--warn); opacity:.75; }
+  .death p { margin:0; font-size:14px; color:#7a4b00; max-width:none; }
+
+  /* --- story: pull quote --- */
+  .quote { margin:14px 0; padding:2px 0 2px 18px; border-left:3px solid var(--accent);
+           font-size:17.5px; line-height:1.4; color:var(--ink); font-weight:500; max-width:60ch; }
+
+  /* --- story: the turn (two managed layers) --- */
+  .layers { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:6px; }
+  .layer { border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:10px;
+           padding:12px 14px; box-shadow:var(--shadow); }
+  .layer h3 { margin:0 0 5px; font-size:15.5px; color:var(--accent-dk); }
+  .layer p { margin:0; font-size:14.5px; max-width:none; }
+
+  /* patterns table — now the story's spine: failure → pattern → module */
+  table { border-collapse:collapse; width:100%; font-size:14.5px; margin-top:4px; }
+  th,td { text-align:left; padding:6px 9px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
+  td.n { color:var(--accent-dk); font-family:var(--mono); font-weight:700; width:2.2em; }
+  td.fail { color:var(--warn); }
+  td code { white-space:nowrap; }
+
+  /* terminal transcript */
+  .term { background:var(--panel); border:1px solid var(--line-2); border-radius:10px;
+          padding:11px 14px; font-family:var(--mono); font-size:12.5px; line-height:1.65;
+          color:var(--ink-soft); white-space:pre-wrap; margin:8px 0 10px; }
+  .term b { color:var(--accent-dk); font-weight:700; }
+  .term i { color:var(--good); font-style:normal; }
+
+  /* callout cards */
+  .cards { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:6px; }
+  .card { border:1px solid var(--line); border-radius:12px; padding:13px 14px; box-shadow:var(--shadow); }
+  .card h3 { margin:0 0 6px; font-size:16px; color:var(--accent-dk); }
+  .card p { font-size:14.5px; margin:0; max-width:none; }
+
+  .note { background:var(--warn-bg); border:1px solid #feefc3; border-radius:12px; padding:14px 16px; }
+  .note p { margin:0; color:#7a4b00; font-size:15px; }
+  .note strong { color:#7a4b00; }
+
+  .resources { display:grid; grid-template-columns:1fr 1fr; gap:6px 28px; }
+  .foot { margin-top:26px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:13.5px; }
+
+  @media (max-width:640px){
+    .cards,.resources,.deaths,.layers{ grid-template-columns:1fr; } .page{ padding:36px 24px; }
+  }
+
+  /* print → clean A4 PDF */
+  @media print {
+    @page { size:A4; margin:16mm 18mm 18mm; }
+    * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .page { max-width:none; margin:0; padding:0; }
+    /* Let sections & the table flow across pages so no page is left half-empty;
+       only keep individual rows / cards / blocks from splitting. */
+    h1, h2, h3 { break-after:avoid; }
+    tr, .card, .note, .death, .layer, .term, .quote { break-inside:avoid; }
+    section { break-inside:auto; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="kicker">Talk overview</div>
+  <h1>Harness Engineering</h1>
+  <p class="sub">Every agent demo works. Then real users arrive. This is the scaffolding that keeps it standing — seven patterns, in Python, on managed Azure primitives.</p>
+  <div class="meta-row">
+    <span class="chip">Python</span>
+    <span class="chip">Microsoft Agent Framework</span>
+    <span class="chip">64 slides · a two-hour session + Q&amp;A</span>
+    <span class="chip g">All 7 on the Agent Framework · 6 need no cloud</span>
+  </div>
+
+  <section>
+    <h2>The demo that dies</h2>
+    <p class="lead">Every engineering team has seen this demo. Someone wires a model to a tool or two, asks it to
+    book a meeting or summarise a document, and the room nods: <em>ship it.</em></p>
+    <p>Here is what the demo doesn't show you. The moment real users arrive, that agent dies four ways at once.</p>
+
+    <div class="deaths">
+      <div class="death">
+        <h3><span>01</span> It obeys attackers.</h3>
+        <p>One crafted message — <em>"ignore previous instructions"</em> — and the agent works for someone else. Nothing sits between the user and the model.</p>
+      </div>
+      <div class="death">
+        <h3><span>02</span> It loses work.</h3>
+        <p>A rate limit at step nine of ten, and the run restarts from zero. Every completed step repeated, every side effect doubled.</p>
+      </div>
+      <div class="death">
+        <h3><span>03</span> It runs anything.</h3>
+        <p>The model writes code, and that code executes in your process, on your filesystem, with your credentials.</p>
+      </div>
+      <div class="death">
+        <h3><span>04</span> It remembers nothing.</h3>
+        <p>Every conversation starts from scratch — no history, no facts, none of the context the user gave you three turns ago.</p>
+      </div>
+    </div>
+
+    <p>Add two more for good measure — it answers billing questions with engineering answers, and it fires off refunds
+    with nobody signing off — and you have the full obituary.</p>
+
+    <div class="quote">The scaffolding that prevents all of this has a name: the <strong>harness</strong>. Harness
+    engineering — not prompt engineering — is where most of the real work of production agents lives.</div>
+  </section>
+
+  <section>
+    <h2>First — which "harness"?</h2>
+    <div class="note">
+      <p><strong>Not the same as OpenAI's "harness engineering."</strong> That term describes a <em>dev-time</em>
+      practice — "humans steer, agents execute," where coding agents write your software. Great topic; different talk.
+      This is the <em>runtime</em> meaning: the scaffolding a deployed agent runs <em>inside</em>. Same words,
+      different layer — worth settling in the first two minutes before someone quotes it back at you.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>The turn — pure Python, on Microsoft Agent Framework</h2>
+    <p>Build all of this by hand and you learn a great deal — and you own a great deal of infrastructure forever.
+    Nobody writes their own scheduler any more, and the same logic applies here. So this talk is pure Python, and
+    two layers of Microsoft's managed stack do the heavy lifting.</p>
+    <div class="layers">
+      <div class="layer">
+        <h3>Azure AI Foundry — Agent Service</h3>
+        <p>The <em>agents themselves</em>: model calls plus the tool loop, managed threads for memory, sandboxed
+        built-in tools like Code Interpreter and File Search.</p>
+      </div>
+      <div class="layer">
+        <h3>Microsoft Agent Framework</h3>
+        <p>The <em>harness around them</em>: middleware and guardrails, durable checkpointed workflows, multi-agent
+        orchestration, human-in-the-loop.</p>
+      </div>
+    </div>
+    <p style="margin-top:11px">Our own code shrinks to a thin FastAPI layer that composes them. The working rule,
+    written into the repo: <em>if a lesson can be solved by configuring a managed service, don't hand-roll it.</em>
+    Seven patterns, written as orchestration rather than plumbing.</p>
+  </section>
+
+  <section>
+    <h2>The one convention that made it work</h2>
+    <p>There is a problem with "just use the managed service": you cannot unit-test a cloud, and you cannot develop
+    against a subscription you are still waiting on access to. So every Azure dependency sits behind a <strong>seam</strong>
+    — a <code>typing.Protocol</code> with a local implementation. The whole suite runs offline: deterministic tests, no
+    cloud account, no API keys.</p>
+    <div class="quote">The second half is the half that matters: <strong>state the leak.</strong> Every stand-in names
+    the service it replaces <em>and says honestly where it is weaker.</em></div>
+    <p>The subprocess sandbox admits it is not a real security boundary. The keyword router admits it has no notion of
+    meaning. The summariser admits it is lossy. This sounds like documentation hygiene; it is actually a design
+    forcing-function — if you cannot articulate what the managed service gives you that your stub doesn't, you don't
+    understand the pattern yet. It is also, conveniently, your migration plan.</p>
+  </section>
+
+  <section>
+    <h2>The seven patterns — one per way the agent died</h2>
+    <table>
+      <tr><th>#</th><th>The failure</th><th>The pattern</th><th>Module</th></tr>
+      <tr><td class="n">1</td><td class="fail">It obeys attackers</td><td>Agent Harness — guardrails as middleware</td><td><code>guardrails.py</code></td></tr>
+      <tr><td class="n">2</td><td class="fail">It loses work on a crash</td><td>Durable Execution — resume from a checkpoint</td><td><code>durable/</code></td></tr>
+      <tr><td class="n">3</td><td class="fail">It runs anything</td><td>Secure Sandboxing — isolation + hard timeout</td><td><code>sandbox.py</code></td></tr>
+      <tr><td class="n">4</td><td class="fail">It remembers nothing</td><td>Advanced Memory — threads, recall, summarisation</td><td><code>memory/</code></td></tr>
+      <tr><td class="n">5</td><td class="fail">It answers the wrong question</td><td>Orchestration — triage intent, hand off</td><td><code>router.py</code></td></tr>
+      <tr><td class="n">6</td><td class="fail">One failure sinks the batch</td><td>Hierarchical Supervision — fan out, aggregate</td><td><code>supervisor.py</code></td></tr>
+      <tr><td class="n">7</td><td class="fail">Nobody signed off</td><td>Human-in-the-Loop — pause, approve, resume</td><td><code>hitl.py</code></td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>The demo, live — guardrails are an arms race</h2>
+    <p>Lesson one is twenty lines: block empty input, oversized input, and prompt-injection markers before anything
+    reaches the model. Also trivially bypassed — swap one Latin "e" for a Cyrillic "е" and a substring check waves it
+    straight through. So the guardrail grew a safety layer that folds homoglyphs and zero-width characters
+    <em>before</em> matching, and a red-team corpus scores it on every test run:</p>
+    <div class="term"><b>▶ POST /chat</b> — a prompt injection is hard-blocked
+{ "guardrail": "possible prompt injection: 'ignore previous instructions'" }
+
+<b>▶ POST /chat</b> — the same injection disguised with a Cyrillic 'е'
+{ "guardrail": "possible prompt injection <i>(obfuscated)</i>: 'ignore previous instructions'" }</div>
+    <p>That <code>(obfuscated)</code> tag is the folding pass firing, not a lucky substring match. The guardrail is
+    <em>measured</em>, not assumed — and the docstring still states the leak: this is heuristics, not ML. Content
+    Safety Prompt Shields remain the production answer.</p>
+  </section>
+
+  <section>
+    <h2>Then we wired the real thing — and it bit us twice</h2>
+    <p>Reimplementing patterns locally is education; wiring them to a public-preview framework is engineering.
+    <strong>Preview packages drift apart.</strong> The Azure integration package declared an open-ended dependency on a
+    core package whose newest release had renamed an API it still imported — a fresh install broke <em>at import time.</em>
+    The working combination turned out to be the trio uploaded to PyPI within fourteen seconds of each other. We pinned
+    all three as a matched set and wrote the reason next to the pins, because a pin without a why is a pin someone will
+    helpfully bump.</p>
+    <p>The second bite was subtler. The preview client drives Azure's <em>async</em> pipeline, but the obvious credential
+    import gives you the <em>sync</em> one. Everything constructs cleanly. Every test passes. The failure appears only on
+    the first real request — which is to say, only in production, in front of the room.</p>
+    <div class="quote">Two lessons in one afternoon: pin preview dependencies as matched sets, and review the code
+    path your tests deliberately cannot reach.</div>
+  </section>
+
+  <section>
+    <h2>The payoff — two runtimes, one seam</h2>
+    <p>All that seam discipline buys two runtimes for the price of one interface. <strong>Azure mode</strong> points the
+    Agent Framework at a Foundry project — managed threads, sandboxed tools, keyless auth. <strong>Local mode</strong>
+    points the <em>same</em> framework at Foundry Local, Microsoft's on-device runtime: nothing else to install, and the
+    first request resolves the model from the catalog, downloads it, loads it, and serves it. Phi-4-mini boots in under
+    two minutes and answers through the full production path, entirely on a laptop.</p>
+    <p>One decision worth stealing: modes are <strong>explicit, and explicit modes fail loud.</strong> Ask for
+    <code>azure</code> without credentials and the app raises with the exact variable named — it never quietly falls back
+    to the stub. We learned that one the honest way: an earlier draft documented an opt-in flow that never actually
+    loaded the config. Everything "worked", the stub answered politely, and only a review caught that users would believe
+    they were testing a real model.</p>
+    <div class="quote">Silent fallbacks are how demos lie.</div>
+  </section>
+
+  <section>
+    <h2>What to take away</h2>
+    <div class="cards">
+      <div class="card"><h3>Seam pattern</h3><p>A Protocol boundary with a local impl standing in for a managed service — the single swap point, and the reason your suite runs offline.</p></div>
+      <div class="card"><h3>State the leak</h3><p>Each stand-in documents exactly where it's weaker than the real service. No false confidence — and it doubles as the migration plan.</p></div>
+      <div class="card"><h3>Thin over managed</h3><p>If a lesson can be solved by configuring a managed primitive, don't build it from scratch. Own the composition, not the infrastructure.</p></div>
+    </div>
+    <p style="margin-top:12px">The industry conversation is still mostly about models. The gap between an agent demo and
+    an agent in production isn't the model — it's the harness. Guard, persist, sandbox, remember, route, supervise, ask a
+    human. Everything else is composition.</p>
+  </section>
+
+  <section>
+    <h2>Go deeper</h2>
+    <div class="resources">
+      <ul>
+        <li><code>docs/architecture.md</code> — design, SLOs, ADRs</li>
+        <li><code>docs/azure-implementation-plan.md</code> — the blueprint</li>
+      </ul>
+      <ul>
+        <li><code>docs/glossary.md</code> · <code>docs/langgraph-glossary.md</code></li>
+        <li>Run it: <code>make demo</code> · <code>uv run --extra dev pytest</code></li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="foot">Companion to the 19-slide <strong>Harness Engineering</strong> deck (<code>docs/presentation/</code>).
+  Local-first practice project — all seven lessons implemented and tested; Lesson 1 wired to Microsoft Agent Framework
+  in both Azure and on-device modes.</div>
+
+</div>
+</body>
+</html>

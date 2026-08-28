@@ -1,0 +1,1679 @@
+{
+  "count": 54,
+  "quizzes": [
+    {
+      "id": "q01",
+      "deck_slide": 9,
+      "title": "Quick quiz",
+      "question": "What is an agent composed of? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Multiple LLM models working in parallel with distributed computing resources",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "A database system with query optimization capabilities",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "An LLM combined with a harness",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "A neural network trained on specific task data",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "Click an answer. The other three are real things \u2014 none of them is an agent.",
+      "speaker_note": "Show of hands before anyone clicks, and let the room commit. Three is right: an agent is an LLM plus a harness. The three wrong answers are each a real thing that people confuse with an agent, so name them as you dismiss them \u2014 one is a serving-and-scale answer, two is a database, four is a fine-tuned model. None of them buys you memory, recovery, tools or a human gate, which is exactly the point of the whole talk. On screen the answers colour in on click; in the PDF and .pptx the right one is marked, so the handout still teaches."
+    },
+    {
+      "id": "q02",
+      "deck_slide": 10,
+      "title": "Quick quiz, again",
+      "question": "Two products, same model underneath. One is better. Why? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "The speed of model inference",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "The choice of the latest foundational model",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "The quality of the harness implementation",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "The volume of training data used",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "Everyone can rent the same model. Almost nobody has the same harness. That is where the difference lives \u2014 and it is the whole reason this talk exists.",
+      "speaker_note": "The thesis of the talk, as a question. Three is right. Say the uncomfortable part plainly: the model is largely a commodity \u2014 your competitor can rent the same one this afternoon, and a better one lands every few months regardless of what either of you does. What you actually control is everything around it. Two is the tempting wrong answer and worth dwelling on, because chasing the newest model is how teams spend a year without shipping anything that survives contact with a user. One and four are the answers of someone still thinking about training rather than about running a product."
+    },
+    {
+      "id": "q03",
+      "deck_slide": 22,
+      "title": "Quick quiz \u2014 what the loop is for",
+      "question": "What is an agent loop actually doing? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Storing tool results in a database",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Running one tool call and returning the result straight away",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "Validating the format of user input",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Going round again \u2014 calling tools until the model has enough to answer confidently",
+          "correct": true
+        }
+      ],
+      "answer": 4,
+      "explanation": "Two is the one to argue about: that is a function call, not an agent. The loop is the difference \u2014 the model gets to look at what came back and decide it needs something else.",
+      "speaker_note": "Four is right, and two is the answer worth spending time on because it is nearly right. Calling a tool once and returning the answer is a function call with extra ceremony; what makes it an agent is that the result comes BACK into the model, which then decides whether it has enough or needs to go again. That is the whole loop from the earlier slide. Tie it back: this is also why nothing makes it stop on its own, and why a bound belongs in the harness rather than in the prompt."
+    },
+    {
+      "id": "q04",
+      "deck_slide": 24,
+      "title": "Quick quiz \u2014 why that loop is not enough",
+      "question": "It runs. Why can you not ship it? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "It can only work with one tool at a time",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "It processes data too slowly",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "It needs too much memory",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "No error handling, nobody approves the risky bits, and nothing controls it",
+          "correct": true
+        }
+      ],
+      "answer": 4,
+      "explanation": "Notice what is not on the list: speed, memory, and how many tools it can hold. Nothing wrong with that loop is a performance problem.",
+      "speaker_note": "Four is right, and the shape of the wrong answers is the lesson. One, two and three are all performance complaints, and performance is not what stops that loop reaching production \u2014 it will happily run fast, all the way into refunding a customer nobody approved. This is the point to make once and hard: the gap between a demo agent and a shipped one is almost never the model or the speed, it is everything the loop does not do when something goes wrong. Refer back to the earlier slide and count them off again if the room needs it."
+    },
+    {
+      "id": "q05",
+      "deck_slide": 25,
+      "title": "Quick quiz \u2014 the step limit",
+      "question": "Why does an agent workflow need a maximum number of steps? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "To cap the characters in each message",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "To stop the loop running away and burning time and money",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "To cap how many tools can be registered",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "To count tokens",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "Remember the very first loop we looked at: while True, with nothing to stop it. This is that bound.",
+      "speaker_note": "Two is right, and it closes the loop opened by the naive-loop slide \u2014 that while True with no exit was the first thing wrong with it, and a step cap is the smallest possible fix. Make the point that the bound belongs in the harness and not in the prompt: asking a model nicely to stop after five turns is a request, whereas a counter in your loop is a guarantee. It is also the cheapest of all seven patterns to add and the one most often missing, because nothing goes wrong until the day something does and the bill arrives."
+    },
+    {
+      "id": "q06",
+      "deck_slide": 27,
+      "title": "Quick quiz \u2014 no tool calls",
+      "question": "The model comes back with zero tool calls. What does that mean? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "The step limit has been reached",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Something errored and needs logging",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "It needs to retry",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "It has nothing left to do \u2014 this is the answer, and the loop is finished",
+          "correct": true
+        }
+      ],
+      "answer": 4,
+      "explanation": "This is the one clean way out of the loop. Everything else that stops it is a failure wearing a result.",
+      "speaker_note": "Four is right. No tool calls means the model has stopped working and started answering, which is the loop's natural exit. Contrast it immediately with option one, because that is the other exit and it is not success \u2014 the step cap stopping you is a run that was cut off. Both leave the loop holding some text; only this one means the task is done."
+    },
+    {
+      "id": "q07",
+      "deck_slide": 28,
+      "title": "Quick quiz \u2014 the failure event",
+      "question": "Why emit a \"workflow failed\" event when the loop exits? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "For debug logging",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "To record that it hit the step cap or errored \u2014 it did not finish",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "To fail over to a different model provider",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "To restart the agent",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "Someone has to be told the difference between done and stopped. If nothing emits that, a cut-off run looks exactly like a finished one.",
+      "speaker_note": "Two is right. This is the previous two slides made operational: your code knows which exit it took, and the event is how everything downstream finds out. Without it a truncated run and a completed run are indistinguishable to a dashboard, a retry policy, or the person waiting on the answer. Tie it to the emit slide \u2014 announce what happened, do not wait for anyone \u2014 and to the honest point that this repo has no event layer, so it has no way to tell anyone either."
+    },
+    {
+      "id": "q08",
+      "deck_slide": 29,
+      "title": "Quick quiz \u2014 the loop",
+      "question": "What is the runtime file for? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "To store API keys and configuration",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "To manage database connections and long-term storage",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "To define the available AI models",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "The core environment where the agent runs \u2014 a game loop, for an agent",
+          "correct": true
+        }
+      ],
+      "answer": 4,
+      "explanation": "Careful with the word: in this deck \"the runtime\" has meant the whole harness. In many codebases it is also the name of the one file holding the loop.",
+      "speaker_note": "Four is right. Every wrong option is a real file that exists in most projects \u2014 config, a database layer, a model registry \u2014 which is what makes the question worth asking: the runtime is none of them, it is the loop itself. Flag the naming clash out loud, because this deck has used 'the runtime' since slide 4 to mean the entire harness, and a student who has just read someone else's codebase will have met it as a filename. Both usages are common; what matters is that they notice the ambiguity rather than silently pick one."
+    },
+    {
+      "id": "q09",
+      "deck_slide": 30,
+      "title": "Quick quiz \u2014 the unfinished conversation",
+      "question": "You resend a message list that ends mid-exchange \u2014 a tool call with no result yet. What does the model do? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Errors, because the list is malformed",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Returns the last message unchanged",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "Sees the exchange is unfinished and carries on from there",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "Starts the conversation again from the top",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "Which is why resuming is simpler than it sounds: hand back the list and the model works out where it was. The conversation is the state.",
+      "speaker_note": "Three is right, and it is the quietly elegant part of all this. A message list that ends on an assistant turn asking for a tool, with no tool result after it, is visibly incomplete \u2014 and the model responds to that by continuing rather than complaining. So recovery does not need a special resume protocol: you load the messages you saved, hand them back, and the model picks up the thread. Tie it to the earlier card \u2014 the list is the memory \u2014 and to durable execution: what you are persisting IS the conversation, which is why restoring it is enough to carry on. Worth adding the caution: that only works if what you saved is complete and well-formed, which is exactly why you append the finished message rather than a half-streamed one."
+    },
+    {
+      "id": "q10",
+      "deck_slide": 31,
+      "title": "Quick quiz \u2014 tool calling",
+      "question": "What is tool calling? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "A built-in way for a model to reach external functions and APIs",
+          "correct": true
+        },
+        {
+          "n": 2,
+          "text": "A logging system",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "A debugging feature",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "A performance optimisation for multi-region systems",
+          "correct": false
+        }
+      ],
+      "answer": 1,
+      "explanation": "This is how a model stops being a text box. It is also why pattern 3 exists \u2014 the moment it can call things, something has to decide what it is allowed to call, and run it somewhere safe.",
+      "speaker_note": "One is right. Worth linking forward rather than treating as a definition: tool calling is the capability that makes every other pattern in this talk necessary. A model that only emits text needs no sandbox, no approval gate and no audit trail. The moment it can call a function, it can spend money, delete a row, or send an email \u2014 which is why isolation is pattern 3 and asking a person is pattern 7. The model proposes the call; the harness decides whether it happens."
+    },
+    {
+      "id": "q11",
+      "deck_slide": 33,
+      "title": "Quick quiz \u2014 the tool description",
+      "question": "What is the description field in a tool definition for? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Validating input parameters",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Generating API documentation",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "Helping the model decide when to call the tool",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "Documentation for the developers who maintain the code later",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "Four is the tempting one, and it is why so many tool descriptions are useless. The description is written for the model, not for you.",
+      "speaker_note": "Three is right, and four is the answer most engineers give on instinct because that is what a description field means everywhere else in their working life. Say it plainly: this string is part of the prompt. The model reads it at decision time to work out whether this tool is the one it wants. Write it for the model \u2014 plain language, when to use it and when not to \u2014 and treat a wrong tool call as a documentation bug, because usually it is. If someone pushes back that a decent model infers most fields anyway, agree: it does, for the obvious ones. The descriptions that earn their keep are on the fields where the NAME does not carry the meaning \u2014 an ambiguous label, a term your company uses differently from everyone else, or a value the agent has to look up somewhere else before it can fill this one in. And say the honest part: how much you can rely on inference varies by model, so the weaker the model, the more the description is doing."
+    },
+    {
+      "id": "q12",
+      "deck_slide": 34,
+      "title": "Quick quiz \u2014 the input schema",
+      "question": "And what is the input schema for? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Encrypting sensitive data",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "A contract for the arguments the agent has to supply when it calls the tool",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "Compressing data",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Generating user interface components",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "Description says when to call it. Schema says what has to be in the call. Between them, most bad tool calls stop being possible.",
+      "speaker_note": "Two is right. Pair it with the previous slide and the two together become one idea: the description decides whether the tool gets called at all, and the schema decides whether the call is well-formed. A model that hallucinates an argument name gets rejected by the schema rather than reaching your function \u2014 which is the same instinct as pattern 1, a check before the thing runs, moved one layer in. Worth noting for the professionals: this is also the boundary you version, because loosening a schema is how a tool quietly grows capabilities nobody reviewed."
+    },
+    {
+      "id": "q13",
+      "deck_slide": 35,
+      "title": "Quick quiz \u2014 describing the fields",
+      "question": "Why bother describing each field in the schema? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Documentation for humans only \u2014 models cannot read them",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "So CSS frameworks can style the form",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "To tell the agent what the field means, when the name alone does not",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "To make the file bigger",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "A model will guess item_id. It will not guess a name your company uses oddly, or a value it has to fetch from somewhere else first. Describe those.",
+      "speaker_note": "Three is right and the wrong answers are deliberately silly, so use the time on the nuance instead of the elimination. The honest version: a decent model infers the obvious fields perfectly well, so descriptions are not uniform effort. They earn their keep exactly where the name does not carry the meaning \u2014 an ambiguous label, a term that means one thing in your system and another everywhere else, or a field whose value has to be looked up before it can be filled in. And how far you can lean on inference varies by model, so the weaker the model, the harder the description is working."
+    },
+    {
+      "id": "q14",
+      "deck_slide": 37,
+      "title": "Quick quiz \u2014 what is in a tool call",
+      "question": "The model asks for a tool. What comes back? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "A call id, the tool name, and the arguments",
+          "correct": true
+        },
+        {
+          "n": 2,
+          "text": "Just a call id",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "Id, name, arguments and an execution timestamp",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Just the name and the arguments",
+          "correct": false
+        }
+      ],
+      "answer": 1,
+      "explanation": "Three is the tempting one: there is no timestamp, because nothing has executed yet. This is a request, not a record. The timestamp is yours to add, when you run it.",
+      "speaker_note": "One is right, and three is worth the time because getting it wrong reveals the wrong mental model. A tool call is a REQUEST \u2014 a name, some arguments, and an id to match the answer to. There is no execution timestamp in it because nothing has run; the model has asked, and that is all. If you want to know when it actually happened, you record that on your side when you run it, which is the same boundary as everything else in this talk. Tie it back to the round trip: name and arguments say what to do, the id says which question this answers."
+    },
+    {
+      "id": "q15",
+      "deck_slide": 38,
+      "title": "Quick quiz \u2014 where the tool runs",
+      "question": "The model asks for a tool call. Where does it actually run? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "In the browser",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "In cloud storage",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "On the model provider's servers, automatically",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "On your own server, after the model asks for it",
+          "correct": true
+        }
+      ],
+      "answer": 4,
+      "explanation": "Three is the belief worth correcting today. The provider has no copy of your code. And that is good news \u2014 it is why a guardrail or a human gate can exist at all.",
+      "speaker_note": "Four is right, and three is a genuinely common misconception that is worth killing in the room. The provider does not have your function, cannot run it, and never sees it \u2014 all it gets is a name, a schema and a description. Everything actually happens on your side. Frame that as the good news rather than a limitation: because execution is yours, you get to decide whether a call happens at all, put it in a sandbox, bound it with a clock, or stop and ask a person. If the provider ran your tools, none of the seven patterns would be available to you."
+    },
+    {
+      "id": "q16",
+      "deck_slide": 39,
+      "title": "Quick quiz \u2014 the call id",
+      "question": "Why does a tool call carry an id? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "To authenticate the tool with the provider",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "To encrypt the message",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "So the result can be matched back to the request that asked for it",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "To store tool calls for auditing",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "Send several calls at once and the answers come back out of order. The id is how anything makes sense of that. Drop it and most models break outright.",
+      "speaker_note": "Three is right. It sounds like plumbing until you picture more than one call in flight: the model asked three things, three results come back, and without an id nothing tells it which answer belongs to which question. That is why it is not optional \u2014 most providers will error rather than guess. Worth linking to pattern 6: the moment you fan work out, correlating replies to requests stops being a detail and becomes the whole job, and this is the smallest version of that problem."
+    },
+    {
+      "id": "q17",
+      "deck_slide": 40,
+      "title": "Quick quiz \u2014 sending a result back",
+      "question": "You ran the tool. Which role carries the result back to the model? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "user \u2014 it is going into the conversation",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "assistant \u2014 it belongs with the call that asked",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "tool \u2014 with the id of the call it answers",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "system \u2014 it is machine output",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "The roles are not decoration. Put a tool result in as the user and you have just told the model a person said it \u2014 which is exactly the confusion pattern 1 exists to prevent.",
+      "speaker_note": "Three is right, and the reason is worth more than the fact. Roles are a trust boundary, not labels: system is you, user is the person, assistant is the model, tool is machine output from something the model asked for. Smuggle a tool result in under the user role \u2014 which people do, because it is easy \u2014 and you have told the model a human said it, which is the same category of confusion that prompt injection exploits. The id goes with it so the model knows which of its questions this answers."
+    },
+    {
+      "id": "q18",
+      "deck_slide": 41,
+      "title": "Quick quiz \u2014 what has to be last",
+      "question": "You have built the list and you are about to call the model. What must be on the end of it? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Something waiting on an answer \u2014 the person\u2019s message, or a tool result",
+          "correct": true
+        },
+        {
+          "n": 2,
+          "text": "The standing instructions, repeated at the bottom",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "An empty message, to show the turn is over",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "A sample reply, to show it the format you want",
+          "correct": false
+        }
+      ],
+      "answer": 1,
+      "explanation": "The list is a question, and the last line is the question. End on the model\u2019s own previous reply and you have handed it nothing to respond to. Standing instructions go at the top and stay there \u2014 putting them last does not make them louder.",
+      "speaker_note": "One. This is a small thing that produces very confusing bugs, so it earns a slide. The message list is not a transcript you are archiving, it is a question you are asking, and the last entry is the actual question. So it has to be something that leaves the model with work to do: the person's new message, or the result of a tool it just asked for. End on the assistant's own last reply and you have asked it to respond to itself \u2014 some providers error, others produce something odd and directionless, and either way the fault is several layers from where it looks. Kill option two while you are here, because it is the tempting one: standing instructions belong at the top, in the system role, and repeating them at the bottom to make them stick is a habit worth unlearning \u2014 it costs tokens every turn and does not buy obedience. Option four is a real technique in the wrong place; showing the model examples of the format you want is fine, but they belong in the instructions as examples, not dangling at the end where a genuine question should be. Tie it back to the round trip: when a tool result goes on the end, that is the loop closing, and the model now has exactly what it asked for and a reason to speak again."
+    },
+    {
+      "id": "q19",
+      "deck_slide": 42,
+      "title": "Quick quiz \u2014 the roles",
+      "question": "What are the four roles in a message list? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "prompt, response, context, function",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "admin, client, server, callback",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "input, output, error, response",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "system, user, assistant, tool",
+          "correct": true
+        }
+      ],
+      "answer": 4,
+      "explanation": "The whole conversation is just that list, replayed every turn. Which is why it costs what it costs.",
+      "speaker_note": "Four is right. Walk them: system is your standing instructions, user is what the person typed, assistant is what the model said, tool carries results back from a call you ran. Two things fall out. The conversation is not held anywhere clever \u2014 it is a list you resend in full on every single turn, which is exactly why memory and summarising matter and why the system prompt is not free. And the roles are a trust boundary, not just a label: prompt injection is user text trying to be read as system text, which is why pattern 1 checks the input rather than trusting the roles to hold on their own."
+    },
+    {
+      "id": "q20",
+      "deck_slide": 43,
+      "title": "Quick quiz \u2014 the message list",
+      "question": "Why append every reply back onto the list? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "The model keeps no memory of previous turns \u2014 you resend everything, every time",
+          "correct": true
+        },
+        {
+          "n": 2,
+          "text": "To make later queries faster",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "To reduce API costs",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "To make streaming work",
+          "correct": false
+        }
+      ],
+      "answer": 1,
+      "explanation": "Two and three are not just wrong, they are backwards: a longer list is slower and dearer. You pay for the memory, every single turn.",
+      "speaker_note": "One is right. The provider holds nothing between calls \u2014 the whole conversation goes up with every request, which is why the list IS the memory and why forgetting to append leaves the model with no idea it ever spoke. Land the sting in the small print: the two plausible-sounding wrong answers claim a benefit, and the truth is the exact opposite. Every turn you keep costs you again. That is the thread back to pattern 4 \u2014 summarising is not tidying, it is cost control."
+    },
+    {
+      "id": "q21",
+      "deck_slide": 44,
+      "title": "Quick quiz \u2014 as the list grows",
+      "question": "The conversation gets longer. What happens? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Nothing changes",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "It costs more, but runs just as fast",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "It costs more and gets slower",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "It improves \u2014 the model learns from the history",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "Four is the comfortable myth. Nothing is being learned; the same text is simply being read again, from scratch, on every turn. That is what you are paying for.",
+      "speaker_note": "Three is right, and four is worth a moment because it is a genuinely widespread misunderstanding: nothing is learned from a conversation. The model is not improving as you talk to it \u2014 it is re-reading the same growing pile of text on each call, which costs more tokens and takes longer. Both curves go the wrong way together. This is the whole economic argument for pattern 4: recent turns verbatim, older ones summarised, and the bulk of what you know kept outside the conversation in a store you query."
+    },
+    {
+      "id": "q22",
+      "deck_slide": 45,
+      "title": "Quick quiz \u2014 streaming",
+      "question": "What does a streaming text call do? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Sends the messages and streams the reply back token by token",
+          "correct": true
+        },
+        {
+          "n": 2,
+          "text": "Stores the conversation in a database",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "Compresses data",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Validates the input before it reaches the model",
+          "correct": false
+        }
+      ],
+      "answer": 1,
+      "explanation": "It is not faster. The words arrive at the same rate either way \u2014 but a blank screen for twenty seconds reads as a crash, and streaming lets someone stop a bad answer early.",
+      "speaker_note": "One is right. The point to make is that this is a user-experience decision, not a performance one: the total time to a finished answer is unchanged, but the perceived wait collapses, and a reader can abandon an answer that is clearly going wrong instead of paying for all of it. If you want the whole thing at once instead, that is the generate call rather than the stream call \u2014 same request, different shape of return. This repo does not stream; its API answers in one go."
+    },
+    {
+      "id": "q23",
+      "deck_slide": 46,
+      "title": "Quick quiz \u2014 waiting for the stream",
+      "question": "Why wait for the stream to finish before appending? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Browser compatibility",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "To prevent memory leaks",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "To optimise the connection",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "So you append the finished message, not half of one",
+          "correct": true
+        }
+      ],
+      "answer": 4,
+      "explanation": "A half-streamed reply pushed into the history is not a rendering glitch. The next turn reads it as something the agent actually said.",
+      "speaker_note": "Four is right. Streaming is for the human watching; the history is for the model, and the model needs the completed message. Push it early and you have written a truncated sentence into the permanent record of the conversation, which the next turn then treats as settled. Worth saying that this is a nice illustration of the difference between the two audiences a harness serves at once \u2014 the person, who wants to see progress, and the model, which wants a clean transcript."
+    },
+    {
+      "id": "q24",
+      "deck_slide": 48,
+      "title": "Quick quiz \u2014 swapping model providers",
+      "question": "How does the Vercel AI SDK support multiple providers? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "A separate module per provider, all working with the same methods like streamText or generateText",
+          "correct": true
+        },
+        {
+          "n": 2,
+          "text": "Runtime configuration files edited by hand for each switch",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "Separate API calls per provider",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "A universal API key",
+          "correct": false
+        }
+      ],
+      "answer": 1,
+      "explanation": "Different ecosystem, the same trick worth stealing: one agreed shape, many implementations behind it. Change the import, not the code that calls it. We do it with a Protocol; they do it with a module per provider.",
+      "speaker_note": "One is right, and this is a gift of a slide for a professional audience because it is the seam pattern in someone else's language. The AI SDK ships @ai-sdk/openai, @ai-sdk/anthropic and so on; each exports something that satisfies the same interface, so streamText and generateText do not change when you switch. That is exactly our CheckpointStore Protocol, and exactly why the deck argues the trick is worth stealing rather than being a Python detail. Be clear this project does NOT use the AI SDK \u2014 it is Python on the Microsoft Agent Framework. The point is the shape of the idea, not the tool."
+    },
+    {
+      "id": "q25",
+      "deck_slide": 54,
+      "title": "Quick quiz \u2014 the system prompt",
+      "question": "What is a system prompt? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "A debugging tool that traces the agent's decisions",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "The error shown when the agent fails",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "The user's question that starts the conversation",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "The standing instructions that define how the agent behaves",
+          "correct": true
+        }
+      ],
+      "answer": 4,
+      "explanation": "Three is the near-miss worth naming: that is the user message. The system prompt comes from whoever built the agent, and the user never sees it.",
+      "speaker_note": "Four is right, and three is the one to talk about \u2014 the difference between what the builder says and what the user says is the whole trust model. The system prompt is yours, arrives before anything the user types, and defines persona, context and rules. Two things follow. It is not free: thousands of tokens on every turn, which is the same budget argument as the knowledge base. And it is not a security boundary: a prompt-injection attack is precisely an attempt to get user text treated as though it were system text, which is why pattern 1 checks the input rather than trusting the instructions to hold."
+    },
+    {
+      "id": "q26",
+      "deck_slide": 57,
+      "title": "Quick quiz \u2014 idempotency",
+      "question": "Why must a step be safe to run more than once? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "It compresses data",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "It reduces latency",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "So running it twice gives the same result, with no second side effect",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "It scales the system horizontally",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "\"Work out the total\" twice is harmless. \"Send the money\" twice is not. The save comes after the step, so that gap is real.",
+      "speaker_note": "Three is right, and it is the one piece of durable execution that people skip until it bites. The checkpoint goes down after the step runs, so a crash in that window means the step runs again on resume \u2014 at-least-once, which is what nearly every durable system actually offers. Harmless for a calculation, expensive for a payment or an email. The fix is in the action, not the checkpoint: make it repeat-safe, usually by handing the downstream system a key it can deduplicate on. Say plainly that our own run_durably has exactly this window."
+    },
+    {
+      "id": "q27",
+      "deck_slide": 58,
+      "title": "Quick quiz \u2014 you already use one",
+      "question": "What makes CI/CD a distributed system you already know? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "It runs elsewhere, talks back to other systems, and updates status whether or not you are watching",
+          "correct": true
+        },
+        {
+          "n": 2,
+          "text": "It uses AI to write the tests",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "It needs someone to press the buttons",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "It only runs locally",
+          "correct": false
+        }
+      ],
+      "answer": 1,
+      "explanation": "Stages you can retry. Caching between them. Status that arrives whether the tab is open or not. Recovery when a runner dies. You have been using durable execution for years.",
+      "speaker_note": "One is right, and this is the most useful analogy in the whole durable-execution section because everyone in the room has already lived it. A pipeline runs somewhere else, reports back to GitHub, has stages you can replay individually, caches between them, and updates status asynchronously whether or not anyone is looking. When a runner dies you do not start the release from scratch. Every property we want from a durable agent workflow is something they already expect from CI \u2014 so the pattern is not exotic, it is just unfamiliar in this context."
+    },
+    {
+      "id": "q28",
+      "deck_slide": 59,
+      "title": "Quick quiz \u2014 where the save points live",
+      "question": "Durable-execution tools exist to do what? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Handle authentication",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Replace the database with an in-memory cache",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "Compile code faster",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Keep every step's inputs and outputs in a database, so a run can resume",
+          "correct": true
+        }
+      ],
+      "answer": 4,
+      "explanation": "Wrap an operation in a step and its inputs and outputs are recorded \u2014 so a replay skips it rather than redoing it. Several tools do this \u2014 Temporal, Inngest, DBOS \u2014 and the Agent Framework has its own, which is what this repo runs. Ours is a seam: a file on a laptop today, a cloud database later.",
+      "speaker_note": "Four is right, and the mechanism is worth a sentence: wrapping an operation in a step records its inputs AND its outputs, which is what lets a replay skip a finished step instead of running it again. That is a stronger guarantee than our own run_durably, which only saves state after each step. But do not oversell it \u2014 people say this 'prevents duplicate execution', and it does only once the record has landed. Crash between doing the thing and recording that you did it and you are back to at-least-once, which is why idempotent steps matter even with a good engine underneath. The category is durable execution and there are a handful of real options \u2014 DBOS, Temporal, Inngest, Upstash, Cloudflare Workflows \u2014 which differ mostly in how much infrastructure they demand. The database-backed ones are the easy sell because you probably already have a database, and the change to your code is small. Tie it back to the seam: we did not pick one. CheckpointStore is a shape with a SQLite implementation behind it, so choosing a real engine later is an implementation swap rather than a rewrite. That is the whole argument for writing the interface down first."
+    },
+    {
+      "id": "q29",
+      "deck_slide": 60,
+      "title": "Quick quiz \u2014 the client goes away",
+      "question": "Someone closes the tab mid-conversation, then comes back. What should happen? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Throw the context away, for security",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Pick up where they left off",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "Start again from the beginning",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Wait for someone to intervene",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "The work does not belong to the connection. On reconnect you replay the log to them \u2014 which is what the sequence numbers were for \u2014 and they catch up to wherever the run got to. This is the crash demo again, except nothing crashed; someone just left.",
+      "speaker_note": "Two is right, and it is worth pointing out that this is the same machinery as the crash demo wearing different clothes. Nothing failed here; a person shut a laptop. If the run lives in the connection, closing the tab kills it and they come back to nothing \u2014 which is precisely the experience that makes people distrust these products. If the run lives in a save point, the connection is just a window onto work that carried on regardless. That is also why the transport has to push rather than only answer: when they return, the result may have been ready for ten minutes."
+    },
+    {
+      "id": "q30",
+      "deck_slide": 61,
+      "title": "Quick quiz \u2014 what deserves a save point?",
+      "question": "You cannot save after every line. Which of these is worth wrapping? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Adding up numbers you already have in front of you",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Anything that reaches out of your process \u2014 slow, unrepeatable, or paid for",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "Every line, to be safe",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Only writes to the database",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "Three questions, and any yes means wrap it: does it leave your process and take time? Would it answer differently if you ran it again? Did it cost money? Pure local arithmetic needs none of it \u2014 a replay will work it out again, identically, for nothing.",
+      "speaker_note": "Two. This is the question everybody actually has when they meet durable execution \u2014 not what a step is, but which things should be one \u2014 so give them the test as three questions they can run in their head. Does it leave the process? Anything crossing the boundary is slow and can fail independently of you: an API call, a database write, a file, a payment. Would it answer differently next time? That is the model call, anything with a clock or a random number in it, anything reading state someone else can change. Did it cost money? Then re-buying it on every resume is waste you chose. Any single yes is enough. And say what does NOT need wrapping, because over-wrapping is the other failure and it makes a workflow unreadable: pure computation over data you already hold is free to redo and will produce exactly the same answer, so recording it buys you nothing but noise. The neat part is that the three criteria are the same three arguments the deck has already made separately \u2014 the model call is the non-deterministic one, the emit paired with its operation is the leaves-your-process one, and the expensive-call argument is the third. This slide is just the rule they all came from."
+    },
+    {
+      "id": "q31",
+      "deck_slide": 62,
+      "title": "Quick quiz \u2014 making a step durable",
+      "question": "How do you turn an ordinary operation into a recorded step? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Add it to a workflow configuration object first",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Register it up front, before the workflow runs",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "Create it with a name and a handler",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Wrap the operation, passing the work in as a function",
+          "correct": true
+        }
+      ],
+      "answer": 4,
+      "explanation": "Learn the shape, not the spelling. Wrapping means the library sees the call happen, so it can record what went in and what came out. Registering it somewhere else could not.",
+      "speaker_note": "Four is right, and the small print is the transferable part \u2014 the exact method name differs by library and does not matter. What matters is why it is a wrapper rather than a registration: the library has to be inside the call to see its inputs and its result, and to know whether it finished. A step declared in a config file somewhere is just a name; a step that wraps the work can record it. That is the same reason the deck keeps returning to who is executing \u2014 recording, bounding and approving all require being in the path, not adjacent to it. This project does not use DBOS; its CheckpointStore seam is the same idea one layer down."
+    },
+    {
+      "id": "q32",
+      "deck_slide": 63,
+      "title": "Quick quiz \u2014 the model call in a step",
+      "question": "Why wrap the call to the model itself in a step? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "So a restart does not buy the same expensive call twice",
+          "correct": true
+        },
+        {
+          "n": 2,
+          "text": "To turn a synchronous call asynchronous",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "To make the model faster by caching in memory",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "To run several model calls in parallel",
+          "correct": false
+        }
+      ],
+      "answer": 1,
+      "explanation": "Right \u2014 and there is a second reason that matters more. The model is not deterministic: ask again and it may answer differently and send the run down another path. Recording the answer is what makes a replay a replay.",
+      "speaker_note": "One is right and it is the answer everyone gives, so use the small print to go past it. Cost is real but shallow. The deeper reason is determinism: a recorded step replays the answer the run actually got, whereas re-calling the model during recovery can produce a different answer, a different tool choice, a different branch \u2014 at which point you are not resuming a run, you are starting a divergent one with the same id. That is much harder to notice than a bill. Say both, in that order, and the room will remember the second one."
+    },
+    {
+      "id": "q33",
+      "deck_slide": 64,
+      "title": "Quick quiz \u2014 emits in a step",
+      "question": "Why put the emit inside a step rather than loose in the workflow? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "To broadcast events in real time",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "So a restart cannot fire it a second time",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "To improve performance",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "To get database transaction guarantees",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "An emit left loose in the workflow is not recorded, so a resume runs it again \u2014 and now the log says a thing happened twice that only happened once. Anything with an effect belongs in a step.",
+      "speaker_note": "Two is right. The general rule is the one to leave them with: in a durable workflow, anything with an effect on the outside world belongs inside a step, because a step is the only thing that gets recorded and therefore the only thing a resume will skip. Code sitting loose between steps runs again on every recovery. For an emit that means duplicate events in your own audit trail, which is worse than it sounds \u2014 the record is supposed to be the thing you trust when you are reconstructing what happened. Same rule covers sending mail, taking payment, or writing a row."
+    },
+    {
+      "id": "q34",
+      "deck_slide": 65,
+      "title": "Quick quiz \u2014 awaiting a streaming step",
+      "question": "You wrap a streaming call in a step and await it. Does the streaming stop? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Yes \u2014 awaiting collects it all before anything is shown",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "No \u2014 the stream still runs inside; you are waiting for the step to finish",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "Only if the database is slow",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Streaming cannot be used in a durable workflow",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "You are awaiting the step, not the first token. Tokens flow to the reader exactly as before; the step simply records what happened once it is done.",
+      "speaker_note": "Two is right, and it removes a fear that stops people adopting durable execution at all \u2014 the belief that making something durable must make it feel slower. It does not. Awaiting the step means waiting for that unit of work to complete, while the streaming inside it goes on doing what it always did, token by token, to whoever is watching. The two concerns are simply at different layers: streaming is how the human experiences the call, the step is how the system records it."
+    },
+    {
+      "id": "q35",
+      "deck_slide": 68,
+      "title": "Quick quiz \u2014 when do you need a sandbox?",
+      "question": "Two situations make it unavoidable. Which pair? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Long conversations, and large files",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "When it runs risky code \u2014 shell, SQL \u2014 and when it writes programs that chain tools together",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "When there are many users, and when latency matters",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Only when handling payments",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "A coding agent running shell. An analysis agent running SQL. And code mode, where it writes a program instead of picking from a menu. A menu is a bounded set of asks. A program is not.",
+      "speaker_note": "Two is right. Both cases share a shape: the agent stops choosing from things you predefined and starts producing something arbitrary. A coding agent that runs shell commands, or an analysis agent writing SQL, is executing text the model composed \u2014 and code mode is the same thing generalised, where it writes a short program stringing several tools together instead of spending a turn on each. That second one is genuinely better engineering, faster and cheaper, and it is exactly what removes your ability to enumerate what might happen. Hence the stranger line from the pattern slide: you would not give an unknown person shell on production, and an arbitrary program from a model is the same risk with better manners."
+    },
+    {
+      "id": "q36",
+      "deck_slide": 69,
+      "title": "Quick quiz \u2014 why code mode wins",
+      "question": "What does writing code buy over calling tools one at a time? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "It combines several tools into one execution, so a dozen turns become one",
+          "correct": true
+        },
+        {
+          "n": 2,
+          "text": "It removes the need for a model at all",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "It generates documentation and an audit trail",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "It needs fewer logins",
+          "correct": false
+        }
+      ],
+      "answer": 1,
+      "explanation": "Sequential calling is ask, wait, think, ask again \u2014 every hop costing a round trip and a pile of tokens. A program does the whole errand and comes back once.",
+      "speaker_note": "One is right. Picture the sequential version honestly: call a tool, wait, reason about what came back, call the next, wait again \u2014 a task needing a dozen lookups is a dozen round trips, each one paying for the whole conversation again in tokens. Code mode collapses that into a single execution that loops and combines on its own and returns the finished answer. The catch, which is the reason pattern 3 exists, is that you have traded a bounded menu of tool calls for an arbitrary program."
+    },
+    {
+      "id": "q37",
+      "deck_slide": 70,
+      "title": "Quick quiz \u2014 who needs to run code?",
+      "question": "Which agents actually benefit from being able to execute code? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Ones handling logins, to run security checks",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Ones doing analysis or writing software \u2014 real computation",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "Ones that only summarise text",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Ones generating images",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "If the job is working something out, code earns its place. If the job is producing prose, it is a liability you did not need. Do not hand out a capability the task never asked for.",
+      "speaker_note": "Two is right, and the closing line is the transferable rule. Analysis and coding agents genuinely need to compute \u2014 filter a dataset, solve an equation, run a query \u2014 and code is how they do it accurately. A summarising agent does not, and giving it the capability anyway buys you every risk of pattern 3 in exchange for nothing. That is worth saying plainly to a room full of people about to build their first agent: the temptation is to hand it everything you can, and each capability you add is a boundary you now have to defend. Start with what the task requires."
+    },
+    {
+      "id": "q38",
+      "deck_slide": 71,
+      "title": "Quick quiz \u2014 arithmetic",
+      "question": "Why let the agent write code for a calculation instead of working it out? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "So it can avoid using any maths libraries",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "So it learns maths by trial and error",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "Code is deterministic \u2014 it gets the same right answer every time",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "It halves the memory footprint",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "A model doing arithmetic is predicting what the answer looks like. Code is computing it. Dates are the worst case \u2014 \u201chow many working days between these two\u201d reads as a language question and is not one. For anything that has one correct answer, do not ask a guesser.",
+      "speaker_note": "Three is right, and it generalises far past arithmetic. The model is a prediction machine; asked for the roots of a quadratic it produces text that looks like the roots of a quadratic, which is usually right and occasionally, silently, is not. Handing the same job to code changes the kind of thing it is \u2014 a computation with one answer, repeatable, checkable. The rule worth leaving them with: anything with exactly one correct answer should be computed rather than predicted, and the agent's job is deciding to run it, not being the calculator. Dates are the sharpest example to say out loud, because everyone has been bitten: ask how many working days sit between two dates and you get a fluent, confident, plausible number that is wrong often enough to matter, because the question looks like language and is actually calendar arithmetic with leap years and bank holidays in it. Note what the split really is \u2014 the model is genuinely good at WRITING the code that does this and genuinely bad at BEING it, so play to that: let it generate, let the runtime compute. This is the same instinct behind the sealed-numbers rule in a lot of regulated work \u2014 the model writes the words, the arithmetic comes from somewhere that can be audited."
+    },
+    {
+      "id": "q39",
+      "deck_slide": 72,
+      "title": "Quick quiz \u2014 why dates in particular",
+      "question": "A model is worse at dates than at almost any other everyday thing. Why? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Date formats vary from country to country",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "It never sees the date as a date \u2014 it gets chopped into fragments that mean nothing on their own",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "It has never been shown a calendar",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Too many digits, and digits cause mistakes",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "A model reads text in chunks, and 2026-08-25 may arrive as pieces like 202, 6, -08. Nothing in there says \u201cAugust\u201d, or \u201ca Tuesday\u201d, or \u201c31 days\u201d. It is reassembling a calendar from crumbs, every time.",
+      "speaker_note": "Two. And this is the one slide that explains a weakness people otherwise find baffling &#8212; something that can discuss constitutional law cannot reliably tell you what day of the week a date falls on. The reason is underneath the language: text is split into chunks before the model ever sees it, and a date does not survive that split intact. It arrives as fragments that carry no calendar meaning at all. Nothing in the pieces encodes that this is August, that August has 31 days, that the year is a leap year, or where the weekend falls. Be honest that tokenisation is not the whole story, because a sharp student will push on it: even given a perfectly clean date, the model has no calendar algorithm to execute and no dependable way to carry a multi-step calculation across several steps. So the tokenisation is why it starts badly and the lack of a procedure is why it does not recover. Both point the same way &#8212; do not ask it to compute the date, ask it to write the two lines of code that compute the date. That is the whole of pattern 3 in one example, and it is the example to use if you only have time for one."
+    },
+    {
+      "id": "q40",
+      "deck_slide": 76,
+      "title": "Quick quiz \u2014 a bigger window",
+      "question": "Your conversation keeps growing. You move to a model with a huge context window. Problem solved? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Yes \u2014 room for everything, so nothing needs managing",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "No \u2014 it gets slower, costs more, and quietly loses the middle",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "Yes, as long as you stay under the limit",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "No, because long conversations are refused outright",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "You resend the whole conversation every turn, so it gets slower and dearer with every message. Worse, attention is not even: the start and the end land, the middle fades. A bigger window buys you room, not reliability \u2014 which is why you summarise, and keep the bulk in a store you query.",
+      "speaker_note": "Two, and this is the slide that stops someone solving pattern 4 by buying a bigger number. Three things go wrong together as a conversation grows and only one of them is obvious. It gets slower, because the whole history is resent every single turn \u2014 there is no server-side memory of your chat unless something is deliberately keeping it. It gets more expensive for the same reason, and over a long session the cost compounds rather than staying flat, because every turn pays for every turn before it. And the one nobody predicts: it gets less accurate. Attention across a long context is not uniform \u2014 material at the beginning and the end is used well, material in the middle is measurably less likely to be used at all, which is why people talk about losing the middle. Be fair about the caveat if a sharp student pushes: this was first measured on earlier long-context models and newer ones handle it better, so it is a real effect that varies by model, not a fixed law. The conclusion survives either way. A bigger window is more room, not more reliability, and it does nothing about the cost curve. So you summarise what is old and keep the bulk outside in something you query. That is pattern 4, and this is the argument for it."
+    },
+    {
+      "id": "q41",
+      "deck_slide": 78,
+      "title": "Quick quiz \u2014 what you are allowed to drop",
+      "question": "The history is too long, so something has to go. What is the smallest piece you can safely remove? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Any single message \u2014 oldest first",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "A whole turn \u2014 the request and every tool result it was waiting on",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "Any two messages, to keep the count even",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Half the list, whenever it gets too long",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "A tool call and its result are joined by an id, and the result must come immediately after \u2014 nothing may be slipped in between. Cut between them and you leave a question with no answer \u2014 most models reject the list outright, and the ones that do not get confused. So you group the messages into turns, add up the whole lot to see if you are over, and roll up entire turns.",
+      "speaker_note": "Two. This is the practical detail that turns compaction from an idea into working code, and it is where people's first attempt breaks. The instinct is to treat the history as a list of messages and drop from the front until it fits. That produces a broken list, because messages are not independent: an assistant message that asks for a tool and the tool result that answers it are joined by a call id, and they only make sense as a pair. Drop the first and you have a result answering nothing; drop the second and you have a question that was never answered. Most providers reject a list in that state, which is at least honest \u2014 the worse case is the one that accepts it and quietly gets strange. So the unit is the turn: the request and every tool result it was waiting on, complete. In practice you hold the history grouped into turns, flatten the whole thing when you want to measure it, and when you are over the limit you roll up entire turns from the old end. Point at the shape they have already seen \u2014 this is the same rule as grouping operations into a durable step. The question is never how small you can slice it, it is what stops making sense apart. Split either one down the middle and you get a state your system has no way to interpret."
+    },
+    {
+      "id": "q42",
+      "deck_slide": 80,
+      "title": "Quick quiz \u2014 the knowledge base",
+      "question": "What is a knowledge base for? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Logging every API call",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Caching responses",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "A body of information the agent looks things up in, instead of carrying it all in the prompt",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "Storing credentials and tokens",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "A wiki it queries, not a wiki it pastes. Paste it and every single turn costs you the whole corpus in tokens \u2014 for the three paragraphs it actually needed.",
+      "speaker_note": "Three is right, and it is memory pattern 4 seen from the cost side. The reason a fact store is separate from the conversation is economics as much as design: the context window is finite and you pay for it on every turn, so a corpus that lives outside and gets queried \u2014 by RAG, or by plain old search \u2014 is the only version that scales past a handful of documents. Two is worth a word: caching is a real thing, it is just a different thing. If anyone asks how the agent knows what to look up, that is the retrieval step, and it is exactly where a bad tool description costs you."
+    },
+    {
+      "id": "q43",
+      "deck_slide": 84,
+      "title": "Quick quiz \u2014 where a handoff has to happen",
+      "question": "You give the agent a \u201chand over to billing\u201d tool. It calls it. What actually happens? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Billing takes over the conversation",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Nothing is handed over \u2014 the answer lands back in the same agent, which is still the one talking",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "Both agents reply from then on",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "The conversation ends",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "Record who it went to, who it came from, and why while you are there \u2014 a transfer with no reason attached is the one nobody can explain a week later. A tool result always comes back to the agent that asked \u2014 that is the whole shape of the loop. Nothing can take itself out of its own conversation and put something else there. Only the layer running the agents can change which one is running, so the tool call is a request to hand over, and the runtime does it.",
+      "speaker_note": "Two, and it is the most commonly got-wrong thing on this whole subject, because the obvious implementation is quietly a no-op. You give the agent a handoff tool, it calls it, and you believe the transfer happened \u2014 but look at the loop we drew at the start: a tool result goes back to the agent that requested it, always. So the billing agent never gets the conversation; the original agent gets a message saying billing was notified, and carries on talking. Nothing moved. The reason is worth stating as a principle, because it recurs: nothing can remove itself from its own context and install a replacement. An agent is inside the loop, and the choice of which agent the loop is running sits outside it. So a real handoff is two pieces \u2014 the tool call is the agent REQUESTING a transfer, and the runtime around it is what actually swaps who is running. Say the general form out loud, because they have already met it twice today: you cannot make durable, or safe, or transferable, anything you are not the one executing. It was true when we wrapped an operation in a step, and it is true here."
+    },
+    {
+      "id": "q44",
+      "deck_slide": 88,
+      "title": "Quick quiz \u2014 how many agents do you need?",
+      "question": "You have a genuinely hard problem. How many agents should work on it? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "One per step, so each stays simple",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Usually one \u2014 a good model with a well-built harness around it",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "At least three, or there is nothing to route between",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "One per tool",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "A crowd of agents is the exciting answer and rarely the right one. When you do split, the reason is usually not cleverness: a destructive tool that only one agent may touch, different permissions, or different teams owning different parts. Organisational reasons, mostly \u2014 not capability ones.",
+      "speaker_note": "Two, and this is deliberately the sober slide after two patterns about using more than one agent, because the natural conclusion from those is more agents equals better and that is not true. Most problems that look like they need a team of agents are one capable model with a properly built harness around it \u2014 which is the entire argument of this talk, so say it plainly: the work is in the harness, not in the headcount. Swarms of agents genuinely earn their place at the very hard end, the kind of open-ended research problem where you want many attempts explored in parallel, and almost nowhere else. Then the useful half, which is the part people have not thought about: when you should split, the reasons are usually organisational rather than technical. One agent may hold the tool that deletes things and no other. Different agents run with different permissions and different guardrails. Different teams own different agents and ship them on their own schedule. Those are real and they are good reasons. Wanting it to feel sophisticated is not. And remember the cost from the previous slide: every extra agent is a config away, which makes it easy to add and quietly expensive to run and to reason about."
+    },
+    {
+      "id": "q45",
+      "deck_slide": 91,
+      "title": "Quick quiz \u2014 who decides it needs approving?",
+      "question": "A refund over \u00a31,000 must be signed off. Where does that rule live? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "In the instructions \u2014 tell the model to ask before big refunds",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "In your code, as a plain rule that runs every time",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "Give it an \u201cask a human\u201d tool and let it choose when",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Whichever is easier \u2014 they amount to the same thing",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "One and three both leave the gate to a judgement call, and a model that is right ninety-nine times in a hundred still lets one through. An if statement is right every time. Never make the safety of a system depend on the model remembering to be safe.",
+      "speaker_note": "Two, and this is the sharpest single idea in pattern seven, so do not rush it. The tempting answers are one and three, because both look responsible \u2014 you told it to ask, or you gave it a tool for asking. But both hand the decision to the model, and the model is a predictor. Ninety-nine times out of a hundred it asks, and the hundredth it just does the refund, and that is precisely the case you built the gate for. A rule in your own code \u2014 if the amount is over a thousand, stop and wait \u2014 is right every single time, is testable, and is the same tomorrow as it was today. Say the line plainly because it is the one worth taking away from this whole section: never make the safety of a system depend on the model remembering to be safe. Then connect it to the last two slides, because it is the third appearance of one principle. The handoff has to live in the runtime because an agent cannot replace itself. Approval has to live in the runtime because a gate the model can forget is not a gate. Wrapping an operation in a durable step was the same move again. Every time, the answer is that control belongs to the layer doing the running, not to the thing being run \u2014 and that layer is the harness. That is the talk."
+    },
+    {
+      "id": "q46",
+      "deck_slide": 92,
+      "title": "Quick quiz \u2014 the send button",
+      "question": "You give an agent a \"send reply\" tool and no gate. What is the risk? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "It crashes under too many concurrent sends",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "It gets slower as the queue grows",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "It emails real people, in your name, before anyone has read the drafts",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "It costs more in API calls",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "And it is not misbehaving when it does. You told it to reply to the email; sending is how replying finishes.",
+      "speaker_note": "Three is right, and this is the single best argument for pattern 7 in the whole deck, so give it room. The other three answers are the ones an engineer reaches for \u2014 crashes, latency, cost \u2014 and none of them is the thing that gets you fired. What makes this example land is that the agent is not broken and has not been jailbroken: it was told to reply to the email, sending is how replying completes, and it completed. That is precisely why the gate cannot live in the prompt. You cannot instruct your way out of an agent doing exactly what you asked. Ask the room which tool in their own system would be dangerous under that reading; someone always names one they had not thought about."
+    },
+    {
+      "id": "q47",
+      "deck_slide": 96,
+      "title": "Quick quiz \u2014 the sequence number",
+      "question": "Why does every row in an event log carry a sequence number? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "To cache frequently accessed data",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "To hold the database authentication token",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "To track the order of events, for replay and for spotting duplicates",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "To encrypt the event",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "Events arrive late, and sometimes twice. That is normal, not a bug you can engineer away \u2014 so the log carries the order itself.",
+      "speaker_note": "Three is right. Two jobs from one integer: replay in the true order, and recognise an event you have already handled. The framing that matters is the small print \u2014 out-of-order and duplicate delivery are properties of distributed systems, not defects, so the design has to absorb them rather than wish them away. Tie it to idempotency: the sequence number is how a listener becomes safely repeatable, the same way a dedup key makes a step safely repeatable."
+    },
+    {
+      "id": "q48",
+      "deck_slide": 97,
+      "title": "Quick quiz \u2014 save, then shout",
+      "question": "When does emit tell the connected clients? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "After the event is safely written to the database",
+          "correct": true
+        },
+        {
+          "n": 2,
+          "text": "Immediately, as soon as emit is called",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "Before the write, so listeners still get it if the write fails",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Only on restart",
+          "correct": false
+        }
+      ],
+      "answer": 1,
+      "explanation": "Three sounds generous and is the dangerous one. Tell people something happened, then fail to record it, and nobody can ever reconcile the two.",
+      "speaker_note": "One is right, and three is the answer worth arguing with because it sounds like resilience. It is the opposite. If you notify before persisting and the write fails, every connected client now believes something your system has no record of \u2014 and there is no way to detect the disagreement later, because your log looks perfectly consistent with itself. A slightly slower event is cheap; an unrecorded one that people acted on is not. Same instinct as the human gate: do the irreversible thing last, once the reversible parts have succeeded."
+    },
+    {
+      "id": "q49",
+      "deck_slide": 98,
+      "title": "Quick quiz \u2014 unsubscribing",
+      "question": "What does subscribe hand back, and why? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "The last event, so you can catch up",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "A function that removes your listener \u2014 call it or they pile up",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "A connection id for logging",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Nothing",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "Every listener you add and never remove is a leak. In a process that runs for weeks, that is how you end up rebooting it every Tuesday.",
+      "speaker_note": "Two is right. Handing the cleanup back with the subscription is a small design choice with a big payoff: the caller cannot forget where the off switch is, because they were given it. Skip it and listeners accumulate \u2014 each holding whatever it closed over \u2014 which in a long-lived server is a slow leak that looks like a mystery until someone profiles it. Worth naming the general habit: whatever acquires a resource should hand back the way to release it, in the same breath."
+    },
+    {
+      "id": "q50",
+      "deck_slide": 99,
+      "title": "Quick quiz \u2014 the payload column",
+      "question": "Why hold the event's data as JSON in the database? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "It validates the payload against a schema on the way in",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Every event carries a different shape, and the database can store JSON directly",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "It encrypts the column",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "It compresses long strings",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "The columns you query \u2014 who, what kind, when, which number \u2014 get real columns. The bit that differs per event goes in one JSON field. It does not validate anything.",
+      "speaker_note": "Two is right. The shape of an event log is the point: the fields you filter and sort on \u2014 run id, event type, timestamp, sequence number \u2014 are proper columns, and the payload, which is different for every event type, is one JSON column. That way you get real queries over the structure without inventing forty nullable columns for forty event types. One is the trap and worth killing: a JSON column enforces that the value is valid JSON and nothing more. If you want the payload to match a schema, that check is yours to write \u2014 which is the same lesson as the tool input schema, one layer down."
+    },
+    {
+      "id": "q51",
+      "deck_slide": 100,
+      "title": "Quick quiz \u2014 the transport",
+      "question": "Why WebSockets rather than server-sent events? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "They go both ways, so a distributed layer can push results to any connected client",
+          "correct": true
+        },
+        {
+          "n": 2,
+          "text": "They are required by the SDK",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "They are faster than HTTP",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "They use less bandwidth",
+          "correct": false
+        }
+      ],
+      "answer": 1,
+      "explanation": "Speed and bandwidth are not the reason. Direction is: server-sent events only flow one way, so the client could never fire a task and be told about it later.",
+      "speaker_note": "One is right. Two, three and four are all plausible-sounding performance answers, and none of them is why. The reason is structural: SSE is server-to-client only, so it cannot carry fire-and-forget work in the other direction, and a durable distributed layer needs to push a result back to whichever client is connected \u2014 possibly not the one that started the job, possibly from a different machine. If someone argues SSE plus a POST would do it, agree that it would, and point out you have now hand-rolled half a WebSocket."
+    },
+    {
+      "id": "q52",
+      "deck_slide": 101,
+      "title": "Quick quiz \u2014 emit",
+      "question": "What does the emit pattern accomplish? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "It compresses data for transmission",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "It establishes secure connections between servers across regions",
+          "correct": false
+        },
+        {
+          "n": 3,
+          "text": "It tells anyone interested that an event has occurred",
+          "correct": true
+        },
+        {
+          "n": 4,
+          "text": "It validates input parameters",
+          "correct": false
+        }
+      ],
+      "answer": 3,
+      "explanation": "And crucially it does not wait for anyone to answer. That is what stops one slow listener from holding up the work.",
+      "speaker_note": "Three is right. The word to stress in the answer is 'anyone' \u2014 the emitter does not know or care who is listening, which is exactly what makes the pattern scale and what makes it testable. Add the half the option does not say: it does not wait. A component that blocks until every listener has responded has reinvented a synchronous call with extra steps."
+    },
+    {
+      "id": "q53",
+      "deck_slide": 102,
+      "title": "Quick quiz \u2014 is anyone still there?",
+      "question": "Before writing to a socket you check its ready state. What are you checking? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Whether the client is an administrator",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Whether the connection is still open",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "Whether the client is authenticated",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "Whether encryption is on",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "Clients leave without saying goodbye \u2014 closed laptops, dead wifi, shut tabs. Writing into a socket nobody is holding is how a background job takes the server down with it.",
+      "speaker_note": "Two is right. The habit worth teaching is smaller than the API: never assume the other end is still there. Connections die silently \u2014 a laptop closes, wifi drops, a tab shuts \u2014 and your process finds out only when it tries to write. Check first, and treat a missing client as completely normal rather than an error, because it is. Tie it back: this is precisely why the work must not live in the connection. If the run is durable, a vanished client is a non-event; you keep going and they see the result when they return. If it is not, the disappearance takes the work with it."
+    },
+    {
+      "id": "q54",
+      "deck_slide": 106,
+      "title": "Quick quiz \u2014 now apply it",
+      "question": "You are building an agent that trades money. What matters most? Pick one.",
+      "options": [
+        {
+          "n": 1,
+          "text": "Chat interface design",
+          "correct": false
+        },
+        {
+          "n": 2,
+          "text": "Self-healing, guardrails, approval steps, and keeping financial data safe",
+          "correct": true
+        },
+        {
+          "n": 3,
+          "text": "Real-time market charts",
+          "correct": false
+        },
+        {
+          "n": 4,
+          "text": "File upload",
+          "correct": false
+        }
+      ],
+      "answer": 2,
+      "explanation": "Every wrong answer is about the screen. The right one is the harness \u2014 and it is patterns 1, 6 and 7 with money on the line.",
+      "speaker_note": "The applied question, and the best one to end on. Two is right. What makes it land is the shape of the wrong answers: all three are interface features, and all three are what people reach for first when asked to build something that trades. The chart is not what stops a bad trade \u2014 a guardrail on the way in, a supervisor that isolates a failing leg, and a human who signs off above a threshold are. Point at the flight-deck slide if you used it: two people and two keys for anything irreversible. And say the honest bit \u2014 a real trading harness also needs an audit log you cannot edit, which this repo has as an append-only store but the talk does not cover."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Harness Engineering on Azure",
+    "subtitle": "Target managed architecture — FastAPI composition over Azure AI Foundry",
+    "output": "harness-azure.html",
+    "quality_profile": "showcase"
+  },
+  "layout": { "mode": "grid", "cols": 4, "origin": [40, 90], "gapX": 68, "gapY": 58, "cellW": 132, "cellH": 62 },
+  "components": [
+    { "id": "user", "type": "external", "label": "User / UI", "sublabel": "chat client", "row": 1, "col": 0 },
+    { "id": "api", "type": "backend", "label": "FastAPI Harness", "sublabel": "Container Apps · Agent Fwk", "row": 1, "col": 1 },
+    { "id": "contentsafety", "type": "security", "label": "Content Safety", "sublabel": "Prompt Shields", "row": 0, "col": 1 },
+    { "id": "agentservice", "type": "cloud", "label": "Agent Service", "sublabel": "agents · managed threads", "row": 1, "col": 2 },
+    { "id": "aoai", "type": "cloud", "label": "Azure OpenAI", "sublabel": "GPT-4o / GPT-4.1", "row": 1, "col": 3 },
+    { "id": "tools", "type": "cloud", "label": "Sandboxed Tools", "sublabel": "Code Interpreter · Files", "row": 2, "col": 2 },
+    { "id": "search", "type": "database", "label": "AI Search", "sublabel": "long-term memory", "row": 2, "col": 3 },
+    { "id": "cosmos", "type": "database", "label": "Cosmos DB", "sublabel": "checkpoints · HITL", "row": 2, "col": 1 }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Azure subscription", "wraps": ["api", "contentsafety", "agentservice", "aoai", "tools", "search", "cosmos"] }
+  ],
+  "connections": [
+    { "id": "user-to-api", "from": "user", "to": "api", "label": "HTTPS", "variant": "emphasis" },
+    { "id": "api-to-safety", "from": "api", "to": "contentsafety", "label": "guardrails", "variant": "security", "fromSide": "top", "toSide": "bottom" },
+    { "id": "api-to-agents", "from": "api", "to": "agentservice", "label": "orchestrates", "variant": "emphasis" },
+    { "id": "agents-to-aoai", "from": "agentservice", "to": "aoai", "label": "model calls", "variant": "emphasis" },
+    { "id": "agents-to-tools", "from": "agentservice", "to": "tools", "label": "tool loop", "fromSide": "bottom", "toSide": "top", "labelDy": 24 },
+    { "id": "tools-to-search", "from": "tools", "to": "search", "label": "RAG grounding" },
+    { "id": "api-to-cosmos", "from": "api", "to": "cosmos", "label": "checkpoints", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelDy": 24 }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Identity",
+      "items": [
+        "Entra Managed Identity everywhere",
+        "DefaultAzureCredential — keyless first"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Observability",
+      "items": [
+        "OpenTelemetry traces to App Insights",
+        "Foundry tracing per agent step"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Local seams today",
+      "items": [
+        "SQLite stands in for Cosmos DB",
+        "Subprocess for Code Interpreter",
+        "Keyword table for triage agent"
+      ]
+    }
+  ]
+}

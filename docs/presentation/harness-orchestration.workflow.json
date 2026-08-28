@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Route, Then Supervise",
+    "subtitle": "Lessons 5\u20136 \u2014 triage handoff and hierarchical fan-out",
+    "output": "harness-orchestration.html",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "intake",
+      "label": "Intake"
+    },
+    {
+      "id": "specialists",
+      "label": "Specialists (Lesson 5)"
+    },
+    {
+      "id": "supervision",
+      "label": "Supervision (Lesson 6)"
+    }
+  ],
+  "phases": [],
+  "groups": [
+    {
+      "id": "fanout",
+      "label": "Parallel execution",
+      "lane": "supervision",
+      "fromCol": 3,
+      "toCol": 5,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "request",
+    "router"
+  ],
+  "nodes": [
+    {
+      "id": "request",
+      "lane": "intake",
+      "col": 0,
+      "type": "frontend",
+      "label": "Request",
+      "sublabel": "user intent"
+    },
+    {
+      "id": "router",
+      "lane": "intake",
+      "col": 2,
+      "type": "backend",
+      "label": "Triage router",
+      "sublabel": "keyword table",
+      "tag": "agent later"
+    },
+    {
+      "id": "specialist",
+      "lane": "specialists",
+      "col": 2,
+      "type": "cloud",
+      "width": 170,
+      "label": "Specialist agents",
+      "sublabel": "billing \u00b7 code \u00b7 research"
+    },
+    {
+      "id": "supervisor",
+      "lane": "supervision",
+      "col": 0,
+      "type": "backend",
+      "label": "Supervisor",
+      "sublabel": "decompose"
+    },
+    {
+      "id": "workers",
+      "lane": "supervision",
+      "col": 3,
+      "type": "cloud",
+      "label": "Workers \u00d7N",
+      "sublabel": "parallel, isolated"
+    },
+    {
+      "id": "aggregate",
+      "lane": "supervision",
+      "col": 5,
+      "type": "backend",
+      "label": "Aggregate",
+      "sublabel": "in order"
+    }
+  ],
+  "edges": [
+    {
+      "id": "req-to-router",
+      "from": "request",
+      "to": "router",
+      "variant": "emphasis"
+    },
+    {
+      "id": "route-specialist",
+      "from": "router",
+      "to": "specialist",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "route-supervisor",
+      "from": "router",
+      "to": "supervisor",
+      "label": "multi-part task",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [
+        [
+          300,
+          166
+        ],
+        [
+          88,
+          166
+        ]
+      ],
+      "labelSegment": 2
+    },
+    {
+      "id": "fan-out",
+      "from": "supervisor",
+      "to": "workers",
+      "label": "fan out",
+      "variant": "emphasis"
+    },
+    {
+      "id": "fan-in",
+      "from": "workers",
+      "to": "aggregate",
+      "label": "fan in, ordered",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "The rule table (Lesson 5)",
+      "items": [
+        "invoice / refund \u2192 billing",
+        "bug / error / stack trace \u2192 code",
+        "paper / cite \u2192 research \u00b7 else fallback"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Azure mapping",
+      "items": [
+        "router \u2192 triage agent handoff",
+        "specialists \u2192 Agent Service agents",
+        "fan-out \u2192 Magentic orchestration"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "The contract",
+      "items": [
+        "one bad worker cannot sink the batch",
+        "completion order never leaks into results",
+        "first keyword wins \u2014 the stated leak"
+      ]
+    }
+  ]
+}
