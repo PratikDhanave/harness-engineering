@@ -17,6 +17,19 @@
 
 ---
 
+```bash
+git clone https://github.com/PratikDhanave/harness-engineering && cd harness-engineering
+./scripts/install.sh          # installs uv if needed, provisions Python, runs the tests
+make demo                     # ~15s: a guardrail blocks a disguised attack, then a crash resumes
+```
+
+**No cloud account, no API key, no network.** One prerequisite — [`uv`](https://docs.astral.sh/uv/),
+which the install script fetches for you. If you would rather read than run, the whole talk is at
+**[harness-engineering-talk.vercel.app](https://harness-engineering-talk.vercel.app)**, where the
+guardrail runs live in the browser and you can throw an attack at it yourself.
+
+---
+
 ## Table of contents
 
 - [What is this](#what-is-this)
@@ -44,9 +57,12 @@
 
 ## What is this
 
-A bare model call dies four ways in production: it obeys prompt injections, it loses all work on a crash, it executes untrusted code in your process, and it forgets everything between turns. The **harness** is the scaffolding that fixes that.
+The scaffolding a deployed agent runs *inside* — guardrails, durable execution, sandboxing,
+memory, routing, supervision, human-in-the-loop — is called the **harness**, and it is where most
+of the real work of a production agent lives. ([What goes wrong without it](#the-problem) is the
+next section.)
 
-This project builds that harness in **pure Python on the Microsoft Agent Framework**: **take the harness from managed primitives, own the composition.** Every pattern is first built local-first behind a *seam* — a `typing.Protocol` with a local implementation whose docstring names the Azure service it stands in for and honestly states where it is weaker (*"state the leak"*) — then swapped for the managed implementation without touching the workflow logic.
+This project builds one in **pure Python on the Microsoft Agent Framework**: **take the harness from managed primitives, own the composition.** Every pattern is first built local-first behind a *seam* — a `typing.Protocol` with a local implementation whose docstring names the Azure service it stands in for and honestly states where it is weaker (*"state the leak"*) — then swapped for the managed implementation without touching the workflow logic.
 
 Two layers do the heavy lifting in production:
 
@@ -365,15 +381,20 @@ The `local` mode is verified live on this codebase — Phi-4-mini answering thro
 
 Each lesson is one increment, framed as *"Azure provides X / you build Y."* All seven run and pass tests locally today.
 
-| # | Pattern | Built by hand | Built on the Agent Framework |
-|---|---------|---------------|------------------------------|
-| 1 | Agent Harness | `guardrails.py` + `safety/` + `agents.py` + `app.py` | `af/guard.py` — `AgentMiddleware` |
-| 2 | Durable Execution | `workflow.py` + `durable/` | `af/durable.py` — `WorkflowBuilder` + `FileCheckpointStorage` |
-| 3 | Secure Sandboxing | `sandbox.py` (subprocess + timeout) | — hosted tool only; see `af/sandbox.py` |
-| 4 | Advanced Memory | `memory/` (thread + knowledge + summarise) | `af/remember.py` — `AgentSession` + context providers |
-| 5 | Orchestration | `orchestration/router.py` | `af/route.py` — switch-case edge group |
-| 6 | Hierarchical Supervision | `orchestration/supervisor.py` | `af/supervise.py` — fan-out / fan-in edges |
-| 7 | Human-in-the-Loop | `hitl.py` | `af/gate.py` — `request_info` + `@response_handler` |
+Two names for each, and both are used deliberately. The **verb** — check, survive, isolate,
+remember, route, split up, ask — is what the pattern *does*, and it is what the talk uses because
+a first-year has met all seven words. The **noun** is the term you will meet in the literature and
+in this code. Same seven either way.
+
+| # | Pattern | Also called | Built by hand | Built on the Agent Framework |
+|---|---------|-------------|---------------|------------------------------|
+| 1 | **Check** what comes in | Agent Harness | `guardrails.py` + `safety/` + `agents.py` + `app.py` | `af/guard.py` — `AgentMiddleware` |
+| 2 | **Survive** a crash | Durable Execution | `workflow.py` + `durable/` | `af/durable.py` — `WorkflowBuilder` + `FileCheckpointStorage` |
+| 3 | **Isolate** risky code | Secure Sandboxing | `sandbox.py` (subprocess + timeout) | — hosted tool only; see `af/sandbox.py` |
+| 4 | **Remember** things | Advanced Memory | `memory/` (thread + knowledge + summarise) | `af/remember.py` — `AgentSession` + context providers |
+| 5 | **Route** to the right place | Orchestration | `orchestration/router.py` | `af/route.py` — switch-case edge group |
+| 6 | **Split** work up | Hierarchical Supervision | `orchestration/supervisor.py` | `af/supervise.py` — fan-out / fan-in edges |
+| 7 | **Ask** a person first | Human-in-the-Loop | `hitl.py` | `af/gate.py` — `request_info` + `@response_handler` |
 
 Every row runs with **no cloud, no key and no network** except Lesson 3's managed
 sandbox, which has no local equivalent by definition. Watch all seven at once:
@@ -560,6 +581,9 @@ uv run --extra dev pytest tests/test_hitl.py -q   # 8 tests
 > actually runs is the one diagrammed under [How it works today](#how-it-works-today). This section
 > is here because the seams only make sense once you can see what they are seams *toward*.
 
+<details>
+<summary><b>Show the target architecture and its three diagrams</b></summary>
+
 The intended shape is a thin **FastAPI orchestration API** (target host: Azure Container Apps) driving managed agents. Identity is keyless-first (Managed Identity + `DefaultAzureCredential`); observability is OpenTelemetry → Application Insights.
 
 ```mermaid
@@ -661,6 +685,8 @@ stateDiagram-v2
     Rejected --> [*]
 ```
 
+</details>
+
 ## Diagrams
 
 **Interactive archify diagrams** — each is a self-contained HTML viewer (pan · zoom · per-node focus · keyboard navigation · PNG/SVG export; download and open in any browser) with source JSON and pre-rendered PNGs:
@@ -686,7 +712,7 @@ uv run --extra dev pytest --cov=harness --cov-report=term   # coverage (currentl
 HARNESS_RENDER_MERMAID=1 uv run --extra dev pytest     # + the opt-in Mermaid render check
 ```
 
-Twenty-one test files, 174 cases. Three of them are unusual enough to explain, because each
+Twenty test files and a `conftest.py`, 174 cases. Three of them are unusual enough to explain, because each
 guards a failure that is otherwise **completely silent**:
 
 | File | Guards against |
