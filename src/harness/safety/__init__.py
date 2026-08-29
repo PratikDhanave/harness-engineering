@@ -15,7 +15,7 @@ pieces, each honest about where the local stand-in is weaker than the managed ML
 from __future__ import annotations
 
 from harness.safety.detectors import Detection, detect_attacks, worst
-from harness.safety.normalize import normalize, squash
+from harness.safety.normalize import is_letter_split, normalize, squash
 from harness.safety.redteam import CORPUS, Probe, Result, score
 
 __all__ = [
@@ -26,6 +26,7 @@ __all__ = [
     "detect_attacks",
     "normalize",
     "score",
+    "is_letter_split",
     "squash",
     "worst",
 ]

@@ -110,7 +110,7 @@ flowchart LR
 
     subgraph SAFETY["safety/ — the same markers, three ways"]
         direction TB
-        N1["raw substring"] --> N2["normalize()<br/>homoglyph · zero-width · full-width"] --> N3["squash()<br/>separators removed"] --> N4["detectors<br/>attack families"]
+        N1["raw substring"] --> N2["normalize()<br/>homoglyph · zero-width · full-width"] --> N3["squash()<br/>separators removed<br/><i>only if letter-split</i>"] --> N4["detectors<br/>attack families"]
     end
 
     G --> SAFETY
@@ -329,7 +329,7 @@ make test       # full deterministic suite (cloud-free)
 
 `make test` is the check that setup worked. It must pass with **no cloud account, no API keys
 and no network** — every Azure dependency sits behind a seam with a local implementation, which
-is also why CI needs no secrets. A green run currently reports `174 passed, 3 skipped`; the
+is also why CI needs no secrets. A green run currently reports `187 passed, 3 skipped`; the
 skips are the opt-in Mermaid render check (see below), not failures.
 
 | Symptom | Cause |
@@ -440,6 +440,14 @@ The marker list alone is trivially bypassed, so `safety/` adds two more passes o
 markers — one on **obfuscation-folded** text (homoglyphs, zero-width, full-width, case) and one on
 **squashed** text (every non-alphanumeric removed, which catches `i.g.n.o.r.e`) — plus heuristic
 detectors for attack *families* a flat list cannot express.
+
+The squash pass is **gated**, and the reason is worth knowing because it is the failure mode this
+whole layer is prone to. Deleting every non-alphanumeric character also deletes the full stop that
+ends a sentence, so `"Please do not ignore. Previous instructions were unclear"` squashed to
+`…ignorepreviousinstructions…` and was refused — a real sentence, hard-blocked, from a guard whose
+own docstring claimed that could only happen "in principle". It now runs only when
+`is_letter_split()` finds three or more single characters held apart by separators, which is the
+shape of the evasion and not the shape of prose.
 
 **The leak:** still substring matching, not classification. It defeats mechanical disguises; it
 does not defeat paraphrase, translation, or a novel phrasing. Managed Prompt Shields is the
@@ -720,7 +728,7 @@ A further **18 validated Mermaid diagrams** (C4 views, sequences, state machines
 ## Testing
 
 ```bash
-make test                                              # everything: 174 passed, 3 skipped
+make test                                              # everything: 187 passed, 3 skipped
 uv run --extra dev pytest tests/test_hitl.py -q        # one file
 uv run --extra dev pytest -k "homoglyph" -q            # one behaviour, across files
 uv run --extra dev pytest --cov=harness --cov-report=term   # coverage (currently 95%)

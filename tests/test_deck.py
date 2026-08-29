@@ -105,3 +105,54 @@ def test_animation_does_not_survive_into_the_handout() -> None:
 
     css = (PRES / "slide.css").read_text(encoding="utf-8")
     assert "marker-end: revert" not in css, "revert reverts to none; it caused the bug"
+
+
+# The glossary slide and "You already use all seven" name the same seven patterns,
+# and every lesson's concept slide repeats its own name a third time. That
+# repetition IS the teaching device — a student who meets "Send work to the right
+# place" on slide 6 has to meet the same words on 17 and on 40, or the deck has
+# quietly taught them two names for one thing. Nothing about a reworded row fails:
+# it renders, it exports, it reads fine in isolation. So assert it here.
+SEVEN = (
+    "Check what comes in",
+    "Survive a crash",
+    "Isolate risky code",
+    "Remember things",
+    "Send work to the right place",
+    "Split work up and watch it",
+    "Ask a person first",
+)
+
+
+def _numbered_rows(html: str) -> list[tuple[str, str]]:
+    return re.findall(r'<td class="n">(\d)</td><td>(.*?)</td>', html)
+
+
+def _slide_titled(fragment: str) -> str:
+    for title, html in slides():
+        if fragment in html:
+            return html
+    raise AssertionError(f"no slide contains {fragment!r}")
+
+
+@pytest.mark.parametrize("fragment", ["The words we will use", "You already use all seven"])
+def test_the_seven_are_named_identically_on_every_table(fragment: str) -> None:
+    rows = _numbered_rows(_slide_titled(fragment))
+    assert [n for n, _ in rows] == list("1234567"), f"{fragment}: rows are not 1-7"
+    assert [name for _, name in rows] == list(SEVEN), (
+        f"{fragment} renames a pattern; the deck must use one name per pattern"
+    )
+
+
+def test_each_lesson_concept_slide_repeats_its_own_name() -> None:
+    titles = [t for t, _ in slides() if lesson_of(t)]
+    for i, name in enumerate(SEVEN, start=1):
+        assert f"L{i}{name}" in titles, (
+            f"no L{i} concept slide titled {name!r} — found {[t for t in titles if t.startswith(f'L{i}')]}"
+        )
+
+
+def test_the_glossary_defines_the_two_words_the_talk_cannot_avoid() -> None:
+    html = _slide_titled("The words we will use")
+    for word in ("Harness", "Durable execution"):
+        assert f"<td>{word}</td>" in html, f"glossary no longer defines {word!r}"

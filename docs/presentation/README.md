@@ -81,8 +81,8 @@ The original talk deck, in the Google visual language: white background, Google 
 | `index.html` | Shell page — hosts the deck engine |
 | `slide.js` | **The content**: a `SLIDES` array of `{ html, notes }`, plus the nav engine |
 | `slide.css` | The Google palette (`:root` block) and print rules |
-| `harness-engineering.pdf` | **Exported deck — 64 slides, 960x540 (16:9)**. The 54 quizzes ship separately as `harness-engineering-quiz.pdf` |
-| `harness-engineering.pptx` | **Native PowerPoint replica of the same 64 slides** (generated — see below) |
+| `harness-engineering.pdf` | **Exported deck — 65 slides, 960x540 (16:9)**. The 54 quizzes ship separately as `harness-engineering-quiz.pdf` |
+| `harness-engineering.pptx` | **Native PowerPoint replica of the same 65 slides** (generated — see below) |
 | `talk-overview.html` → `talk-overview.pdf` | 4-page A4 companion doc, same palette — narrative cut |
 
 Regenerate the PDF with headless Chrome (`--headless --print-to-pdf`); the deck's
@@ -115,7 +115,7 @@ the name of the discipline.
 ### The .pptx replica
 
 `harness-engineering.pptx` is a **native PowerPoint build of the Google deck** — same
-64 slides, same 960x540 geometry, same palette — produced by
+65 slides, same 960x540 geometry, same palette — produced by
 `scripts/deck_to_pptx.py`, which parses the `SLIDES` array directly. It is
 generated output: **edit `slide.js` and re-run, never hand-edit the .pptx**, or the
 next run overwrites your changes.
@@ -139,7 +139,7 @@ retarget those runs to "Gotham Bold" before rendering a PDF locally.
 
 ## 3. ClearRoute-skinned talk deck — browser + .pptx
 
-The **Google deck's 64 slides in the ClearRoute palette** — white paper, ClearRoute
+The **Google deck's 65 slides in the ClearRoute palette** — white paper, ClearRoute
 mint — in two forms.
 
 Mint `#00E8AF` is bright, so it is used for **fills** (the rule, badges, the progress
@@ -157,8 +157,8 @@ fullscreen · `#N` deep-links a slide.
 | `clearroute.html` | Shell — loads `slide.css` then `clearroute.css` |
 | `clearroute.css` | **The skin**: re-points slide.css's `:root` vars at the ClearRoute palette, patches the few hardcoded Google values, and recolours the inline SVGs |
 | `slide.js` | Unchanged — **one copy of the talk**, shared with `index.html` |
-| `harness-engineering-clearroute-talk.pptx` | Native PowerPoint, 64 slides, ClearRoute palette (generated) |
-| `harness-engineering-clearroute-talk.pdf` | **Exported ClearRoute deck — 64 slides, 960x540.** Distinct from the preserved 24-slide `harness-engineering-clearroute.pdf`, which is house deck-builder output in Gotham and must not be overwritten |
+| `harness-engineering-clearroute-talk.pptx` | Native PowerPoint, 65 slides, ClearRoute palette (generated) |
+| `harness-engineering-clearroute-talk.pdf` | **Exported ClearRoute deck — 65 slides, 960x540.** Distinct from the preserved 24-slide `harness-engineering-clearroute.pdf`, which is house deck-builder output in Gotham and must not be overwritten |
 | `web-talk-clearroute.html` | The paged web version, ClearRoute skin |
 
 Because the content and engine stay in `slide.js`, editing the `SLIDES` array
@@ -243,7 +243,8 @@ class being present in the file proves nothing about whether the listener fired.
 
 ## Definitions first (24 Aug 2026)
 
-Slides 2 and 3 answer the two questions a mixed room asks before anything else:
+Slides 7 and 8 answer the two questions a mixed room asks before anything else (they were
+slides 2 and 3 when this was written; the front of the deck has grown since):
 
 - **What is the relationship between an agent, a model and a harness?** An agent is a
   model *plus* a harness. Without one you have an LLM making one-off, transactional
@@ -252,6 +253,19 @@ Slides 2 and 3 answer the two questions a mixed room asks before anything else:
 - **What does a harness actually provide?** Conversation, memory, tools, durable
   execution for long jobs, self-healing and resilience, and a choice of architectures —
   plus input checking and a human gate, which together are the seven patterns.
+
+**Slide 6 comes first: "The words we will use".** A ten-row reference card — *harness* and
+*durable execution* defined, then the seven patterns in the same verb phrasings used
+everywhere else in the deck. It is deliberately not a teaching slide: put it up, read the two
+vocabulary rows, move on. It exists so a student who loses the thread on slide forty has one
+page to return to rather than a hunt.
+
+Its seven rows must stay **word-for-word identical** to the names on "You already use all
+seven" and on each lesson title. The point of the card is that the vocabulary never shifts;
+a reworded row teaches two names for one thing and nothing errors.
+
+It also has no vertical budget left — see `table.lessons.gloss` in `slide.css` and the note
+in `CLAUDE.md` before adding a row.
 
 Keep them ahead of the analogy slides. Everything after is an answer to "so what goes in
 the harness", and the analogies only land once the word means something.
