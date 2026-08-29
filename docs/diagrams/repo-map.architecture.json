@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "harness-engineering \u2014 repo map",
+    "subtitle": "Seven lessons, local-first behind seams \u00b7 Lesson 1 wired to Microsoft Agent Framework",
+    "output": "repo-map.html",
+    "quality_profile": "showcase"
+  },
+  "layout": {
+    "mode": "grid",
+    "cols": 5,
+    "origin": [
+      40,
+      90
+    ],
+    "gapX": 56,
+    "gapY": 58,
+    "cellW": 132,
+    "cellH": 62
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "Client",
+      "sublabel": "curl \u00b7 UI",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "guardrails",
+      "type": "security",
+      "label": "guardrails.py",
+      "sublabel": "L1 \u00b7 + safety/",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "router",
+      "type": "backend",
+      "label": "router.py",
+      "sublabel": "L5 \u00b7 triage table",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "supervisor",
+      "type": "backend",
+      "label": "supervisor.py",
+      "sublabel": "L6 \u00b7 fan-out",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "app",
+      "type": "backend",
+      "label": "app.py",
+      "sublabel": "FastAPI \u00b7 /chat",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "agents",
+      "type": "backend",
+      "label": "agents.py",
+      "sublabel": "L1 \u00b7 ReplyAgent seam",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "memory",
+      "type": "database",
+      "label": "memory/",
+      "sublabel": "L4 \u00b7 three stores",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "workflow",
+      "type": "backend",
+      "label": "workflow.py",
+      "sublabel": "L2 \u00b7 run_durably",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "durable",
+      "type": "database",
+      "label": "durable/",
+      "sublabel": "CheckpointStore",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "hitl",
+      "type": "backend",
+      "label": "hitl.py",
+      "sublabel": "L7 \u00b7 approval gate",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "foundry",
+      "type": "cloud",
+      "label": "Agent Framework",
+      "sublabel": "Foundry Local \u00b7 on-device",
+      "row": 0,
+      "col": 4
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "src/harness \u2014 local-first, fully tested offline",
+      "wraps": [
+        "guardrails",
+        "router",
+        "supervisor",
+        "app",
+        "agents",
+        "memory",
+        "workflow",
+        "durable",
+        "hitl"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "client-chat",
+      "from": "user",
+      "to": "app",
+      "label": "POST /chat",
+      "variant": "emphasis"
+    },
+    {
+      "id": "app-guard",
+      "from": "app",
+      "to": "guardrails",
+      "label": "check_input",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "app-agents",
+      "from": "app",
+      "to": "agents",
+      "label": "reply",
+      "variant": "emphasis"
+    },
+    {
+      "id": "agents-foundry",
+      "from": "agents",
+      "to": "foundry",
+      "label": "opt-in via env",
+      "variant": "dashed"
+    },
+    {
+      "id": "wf-durable",
+      "from": "workflow",
+      "to": "durable",
+      "label": "checkpoints"
+    },
+    {
+      "id": "hitl-durable",
+      "from": "hitl",
+      "to": "durable",
+      "label": "approvals"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "The seam pattern",
+      "items": [
+        "a Protocol + local impl per Azure dependency",
+        "docstrings name the managed target",
+        "\"state the leak\" \u2014 weaknesses documented"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Wired today",
+      "items": [
+        "agents.py \u2192 Microsoft Agent Framework (core/openai/orchestrations, current stable)",
+        "opt-in: AZURE_AI_PROJECT_ENDPOINT + deployment name",
+        "unset \u2192 deterministic stub; suite stays cloud-free"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Azure targets (next increments)",
+      "items": [
+        "durable/ \u2192 Cosmos DB checkpoint store",
+        "memory/ \u2192 managed threads + AI Search",
+        "router / supervisor \u2192 handoffs + Magentic"
+      ]
+    }
+  ]
+}

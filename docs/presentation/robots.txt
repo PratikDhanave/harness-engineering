@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /
+
+# Workshop material, kept out of search results deliberately: the deck is meant
+# to be handed out at a talk, not found by strangers. robots.txt is a request,
+# not access control — the real control is Vercel Deployment Protection.

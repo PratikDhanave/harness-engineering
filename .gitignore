@@ -1,0 +1,50 @@
+# --- Secrets & local config (never commit real values) ---
+.env
+.env.*
+!.env.example
+*.local
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.python-version
+
+# --- Test / type / lint caches ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Azure tooling (azd / Bicep / CLI) ---
+.azure/
+*.azure.env
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+
+# --- Claude Code (machine-local settings) ---
+.claude/settings.local.json
+
+# Local durable-execution checkpoint store
+.harness/
+.gstack/
+
+# Office lock files (created while a .pptx/.docx is open)
+~$*
+
+# Vercel CLI state for the published bundle. `vercel link` writes the project +
+# org id here (and an OIDC token into public/.env.local, caught by *.local
+# above). It is machine-local deploy state, not part of the deck — but deleting
+# it unlinks the bundle and the next deploy silently creates a NEW project, so
+# it must survive rebuilds while staying out of git.
+public/.vercel/

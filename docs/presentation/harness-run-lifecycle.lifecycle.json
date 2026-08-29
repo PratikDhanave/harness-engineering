@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "A Durable Run",
+    "subtitle": "Lessons 2 & 7 \u2014 checkpoints, approval gates, terminal exits",
+    "output": "harness-run-lifecycle.html",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "Run phases"
+    },
+    {
+      "id": "pause",
+      "label": "Pauses"
+    },
+    {
+      "id": "terminal",
+      "label": "Terminal exits"
+    }
+  ],
+  "states": [
+    {
+      "id": "queued",
+      "type": "start",
+      "label": "Queued",
+      "lane": "main",
+      "col": 0,
+      "step": "01"
+    },
+    {
+      "id": "running",
+      "type": "active",
+      "label": "Executing",
+      "lane": "main",
+      "col": 2,
+      "step": "02",
+      "tag": "checkpoint / step"
+    },
+    {
+      "id": "checkpointed",
+      "type": "waiting",
+      "label": "Checkpointed",
+      "lane": "pause",
+      "col": 1,
+      "tag": "resume skips done"
+    },
+    {
+      "id": "approval",
+      "type": "waiting",
+      "label": "Needs approval",
+      "lane": "pause",
+      "col": 2,
+      "tag": "one durable row"
+    },
+    {
+      "id": "done",
+      "type": "success",
+      "label": "Completed",
+      "lane": "terminal",
+      "col": 0
+    },
+    {
+      "id": "void",
+      "type": "failure",
+      "label": "Not performed",
+      "lane": "terminal",
+      "col": 2
+    }
+  ],
+  "transitions": [
+    {
+      "id": "start-run",
+      "from": "queued",
+      "to": "running",
+      "variant": "emphasis"
+    },
+    {
+      "id": "crash",
+      "from": "running",
+      "to": "checkpointed",
+      "label": "crash / restart",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelSegment": 1,
+      "labelDx": 70,
+      "labelDy": 18
+    },
+    {
+      "id": "resume",
+      "from": "checkpointed",
+      "to": "running",
+      "label": "resume",
+      "fromSide": "left",
+      "toSide": "bottom",
+      "labelSegment": 0,
+      "labelDy": -12
+    },
+    {
+      "id": "gate",
+      "from": "running",
+      "to": "approval",
+      "label": "sensitive action",
+      "variant": "security",
+      "fromSide": "right",
+      "toSide": "top",
+      "labelSegment": 2,
+      "labelDx": -10
+    },
+    {
+      "id": "approved",
+      "from": "approval",
+      "to": "done",
+      "label": "approved",
+      "variant": "emphasis"
+    },
+    {
+      "id": "refused",
+      "from": "approval",
+      "to": "void",
+      "label": "rejected / timeout"
+    },
+    {
+      "id": "steps-done",
+      "from": "running",
+      "to": "done",
+      "label": "all steps done",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight",
+      "labelAt": [
+        340,
+        330
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Azure mapping",
+      "items": [
+        "checkpoint store \u2192 Cosmos DB",
+        "approval gate \u2192 RequestInfoExecutor",
+        "same rows, managed"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "The guarantees",
+      "items": [
+        "at-least-once \u2014 actions must be idempotent",
+        "deadline checked first \u2014 a late yes is void",
+        "suspension is one durable row, nothing more"
+      ]
+    }
+  ]
+}

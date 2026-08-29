@@ -1,0 +1,445 @@
+/* slide.css — Harness Engineering deck. Professional light theme (white background).
+   Self-contained: system fonts only, no external assets (works offline / file://). */
+
+:root {
+  /* Google-inspired: Google Sans, Blue #4285F4 primary, green success, Google Grey. White paper. */
+  --bg:        #ffffff;
+  --panel:     #f1f3f4;   /* Google Grey 100 (inline code, table hover) */
+  --panel-2:   #e8eaed;   /* Grey 200 — progress track */
+  --ink:       #202124;   /* Google Grey 900 */
+  --ink-soft:  #3c4043;   /* Grey 800 — body */
+  --muted:     #5f6368;   /* Grey 700 */
+  --accent:    #4285f4;   /* Google Blue */
+  --accent-dk: #1a73e8;   /* link blue — small text / code / kicker */
+  --accent-2:  #188038;   /* Google Green — secondary callouts */
+  --good:      #188038;   /* green — "done / local" */
+  --good-bg:   #e6f4ea;
+  --good-bd:   #ceead6;
+  --warn:      #b06000;   /* amber (dark) — pending */
+  --warn-bg:   #fef7e0;
+  --warn-bd:   #feefc3;
+  --line:      #e8eaed;   /* Grey 200 hairline */
+  --line-2:    #dadce0;   /* Grey 300 border */
+  --code-bg:   #ffffff;
+  --code-ink:  #202124;
+  --shadow-sm: 0 1px 2px rgba(60,64,67,.10), 0 1px 3px rgba(60,64,67,.08);
+  --shadow-md: 0 1px 3px rgba(60,64,67,.14), 0 4px 12px rgba(60,64,67,.10);
+  --mono: "Roboto Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: "Google Sans", "Product Sans", Roboto, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --serif: "Google Sans", "Product Sans", Roboto, system-ui, sans-serif; /* Google style: no serif */
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ---------- deck / slides ---------- */
+#deck { position: fixed; inset: 0; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(28px, 6vh, 72px) clamp(36px, 8vw, 132px);
+  animation: fade .32s ease;
+}
+.slide.active { display: flex; }
+/* thin accent rule top-left of every content slide */
+.slide:not(.title)::before {
+  content: ""; position: absolute; top: clamp(28px,6vh,60px); left: clamp(36px,8vw,132px);
+  width: 44px; height: 4px; border-radius: 3px; background: var(--accent);
+}
+.slide:not(.title) h2 { margin-top: 26px; }
+
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* Content arrives in order rather than all at once — heading, then lead, then
+   the diagram, then the small print. Purely presentational: the DEFAULT state
+   of every element is visible, and only the animation starts from nothing.
+   That matters because Chrome runs CSS animations while printing too, so an
+   element left at opacity 0 by a delay would print BLANK with no error. The
+   print block below switches all of it off; do not remove that guard. */
+@media (prefers-reduced-motion: no-preference) {
+  .slide.active > *,
+  .slide.active > .cols > * { animation: rise .55s ease both; }
+  /* A figure builds its own parts, so it must not ALSO slide in as a block —
+     two motions on the same pixels reads as a wobble rather than a build. */
+  .slide.active > .diagram { animation: none; }
+  .slide.active > *:nth-child(1), .slide.active > .cols > *:nth-child(1) { animation-delay: .06s; }
+  .slide.active > *:nth-child(2), .slide.active > .cols > *:nth-child(2) { animation-delay: .20s; }
+  .slide.active > *:nth-child(3), .slide.active > .cols > *:nth-child(3) { animation-delay: .34s; }
+  .slide.active > *:nth-child(4) { animation-delay: .48s; }
+  .slide.active > *:nth-child(5) { animation-delay: .60s; }
+  .slide.active > *:nth-child(n+6) { animation-delay: .70s; }
+}
+@keyframes rise { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+
+/* The arrows in a diagram draw themselves when the slide arrives. Every one of
+   these figures is a flow — a request moving through the harness — so drawing
+   the arrows says "this way" without a word of narration.
+   Only elements with an arrowhead move; boxes and labels are already in place,
+   so the picture is readable from the first frame and nothing is hidden.
+   Considered and rejected: WebGL/WebGPU. There is no 3D here, and a canvas
+   renders to nothing in the PDF and would need separate rasterising for the
+   .pptx — it would cost both handouts to gain nothing on screen. */
+/* The drawing itself is done in slide.js, because it has to measure each
+   arrow: a fixed stroke-dasharray cannot work when the arrows in this deck run
+   from 8px to 334px. Too small and long arrows render with a visible dash gap;
+   too large and short arrows stay hidden until the last moment and then snap
+   in. Both were shipped before this comment existed. */
+
+.slide h1 { font-size: clamp(30px, 5.2vw, 62px); line-height: 1.05; margin: 0 0 .35em; letter-spacing: -.022em; color: var(--ink); }
+.slide h2 {
+  font-size: clamp(24px, 3.6vw, 42px); line-height: 1.12; margin: 0 0 .55em; letter-spacing: -.012em; color: var(--ink);
+}
+.slide h2 .num {
+  font: 700 .5em/1 var(--mono); color: #fff; background: var(--accent);
+  border-radius: 8px; padding: .35em .55em; margin-right: .55em; vertical-align: middle;
+  letter-spacing: 0;
+}
+.slide p  { font-size: clamp(16px, 2vw, 24px); line-height: 1.45; color: var(--ink-soft); margin: .2em 0 .45em; max-width: 62ch; }
+.lead { color: var(--muted); }
+.accent { color: var(--accent); }
+.accent-2 { color: var(--accent-2); }
+
+ul.big { list-style: none; padding: 0; margin: .3em 0; }
+ul.big li {
+  font-size: clamp(16px, 2.05vw, 25px); line-height: 1.38; margin: .40em 0; padding-left: 1.5em; position: relative;
+  max-width: 70ch; color: var(--ink-soft);
+}
+ul.big li::before { content: ""; position: absolute; left: 0; top: .5em; width: .52em; height: .52em; background: var(--accent); border-radius: 1.5px; }
+ul.big li b { color: var(--ink); font-weight: 650; }
+small, .small { color: var(--muted); font-size: clamp(13px, 1.4vw, 17px); }
+/* `.small` alone loses to `.slide p` on specificity, so every <p class="small">
+   in the deck was rendering at full paragraph size — greyer, but not smaller.
+   That is most of a line of vertical budget on a page that clips silently. */
+.slide p.small { font-size: clamp(13px, 1.4vw, 17px); }
+
+code, .k { font-family: var(--mono); }
+p code, li code, td code {
+  background: var(--panel); border: 1px solid var(--line-2); border-radius: 6px;
+  padding: .05em .4em; font-size: .86em; color: var(--accent-dk);
+}
+pre {
+  background: var(--code-bg); border: 1px solid var(--line-2); border-radius: 12px;
+  padding: 18px 20px; overflow: auto; font-family: var(--mono);
+  font-size: clamp(13px, 1.35vw, 18px); line-height: 1.55; color: var(--code-ink); margin: .4em 0;
+  box-shadow: var(--shadow-sm);
+}
+/* Lesson slides already carry a diagram, bullets and a demo trigger, so their
+   code sample has to earn very little vertical space. Same colours, smaller. */
+pre.tight {
+  padding: 11px 14px; margin: .3em 0;
+  font-size: clamp(11px, 1.12vw, 15px); line-height: 1.45;
+}
+
+pre .c   { color: #8a94a8; }     /* comment */
+pre .cmd { color: var(--good); font-weight: 600; } /* command */
+
+/* Links. Rare in this deck — the speakers slide is the only one — and the URL
+   is written out as the link text on purpose, because an href is invisible on
+   paper and in the .pptx (the inline parser keeps the text, not the link). */
+.slide a { color: var(--accent-dk); text-decoration: none; border-bottom: 1.5px solid var(--accent); }
+.slide a:hover { border-bottom-width: 2.5px; }
+.slide p.byline { margin-top: -.15em; }
+
+#toast {
+  position: fixed; left: 50%; bottom: 46px; transform: translateX(-50%) translateY(8px);
+  background: var(--ink); color: #fff; padding: 8px 16px; border-radius: 999px;
+  font: 600 13px/1 var(--mono); letter-spacing: .01em;
+  opacity: 0; pointer-events: none; transition: opacity .16s, transform .16s; z-index: 60;
+}
+#toast.show { opacity: .92; transform: translateX(-50%) translateY(0); }
+@media print { #toast { display: none !important; } }
+
+/* ---------- title slide ---------- */
+.title { justify-content: center; }
+/* Speaker portrait. The image is a data: URI inlined in slide.js, so every
+   surface — file://, the .pptx rasteriser, the deployed bundle — carries it
+   without a separate asset to copy or forget. */
+/* The ClearRoute lockup on the title slide. The supplied asset is the
+   dark-background variant — "CLEAR" is near-white — so the wordmark is
+   repainted to ink at author time; on white paper it would be invisible. */
+.title .logo { width: clamp(150px, 19vw, 244px); height: auto; display: block;
+  margin-bottom: 1.5em; }
+
+/* Two co-authors, so the portraits sit in a row. The wrapper is a real
+   element rather than sibling imgs because the slide is a flex COLUMN — two
+   block images would stack. deck_to_pptx.py knows this class by name. */
+.portraits { display: flex; gap: .6em; margin-bottom: 1.05em; }
+.portraits.big { gap: .9em; margin: .3em 0 1em; }
+.portraits.big .portrait { width: clamp(104px, 15vw, 196px); height: clamp(104px, 15vw, 196px); }
+.portrait {
+  width: clamp(84px, 11vw, 148px); height: clamp(84px, 11vw, 148px);
+  border-radius: 50%; object-fit: cover; display: block;
+  border: 3px solid var(--accent);
+  box-shadow: 0 5px 20px rgba(16, 24, 40, .16);
+}
+.title .kicker {
+  display: flex; align-items: center; gap: .7em;
+  font: 600 clamp(13px,1.55vw,18px)/1 var(--sans); letter-spacing: .005em; text-transform: none;
+  color: var(--accent-dk); margin-bottom: 1.2em;
+}
+.title .kicker::before { content: ""; width: 30px; height: 3px; background: var(--accent); border-radius: 2px; }
+/* Sized for the full title — 'Harness Engineering with Microsoft Agent
+   Framework' — to break over TWO lines. 15ch made it four and pushed the
+   portrait and the meta rule off a page that clips without complaining. */
+.title h1 { font-family: var(--sans); font-weight: 500; font-size: clamp(30px, 5.0vw, 64px); max-width: 26ch; letter-spacing: -.02em; }
+.title .sub { font-size: clamp(17px, 2.3vw, 28px); color: var(--muted); max-width: 46ch; margin-top: .35em; }
+.title .meta { margin-top: 2.1em; color: var(--ink-soft); font: 500 clamp(13px,1.5vw,18px)/1.6 var(--mono);
+               padding-top: 1.1em; border-top: 1px solid var(--line); display: inline-block; }
+
+.section-slide { justify-content: center; align-items: flex-start; }
+.section-slide .kicker { font: 600 clamp(13px,1.5vw,17px)/1 var(--sans); letter-spacing:.005em; text-transform: none; color: var(--accent-dk); margin-bottom: .6em; }
+
+/* ---------- layout helpers ---------- */
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2.4vw, 34px); align-items: start; }
+.cols.three { grid-template-columns: repeat(3, 1fr); }
+.card {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: clamp(13px,1.6vw,18px);
+  box-shadow: var(--shadow-sm);
+}
+.card h3 { margin: 0 0 .35em; font-size: clamp(16px,1.9vw,22px); color: var(--ink); }
+.card p, .card li { font-size: clamp(14px,1.55vw,19px); color: var(--ink-soft); }
+.card .tag { display: inline-block; font: 700 clamp(12px,1.4vw,15px)/1 var(--sans); color: var(--accent-dk); letter-spacing: .01em; text-transform: none; margin-bottom: .3em; }
+
+/* ---------- recap cards (click to reveal) ----------------------------------
+   Progressive enhancement on purpose. The answer is a plain <p> in the source,
+   so the .pptx parser and the printed PDF both keep it; only the SCREEN hides
+   it behind a click. The "Click to reveal" label is CSS generated content, so
+   it never reaches the .pptx (which reads the HTML, not the rendering). */
+.card.qa { cursor: pointer; position: relative; transition: border-color .15s; }
+.card.qa:hover { border-color: var(--accent); }
+.card.qa .a { display: none; }
+.card.qa.open .a { display: block; }
+.card.qa::after {
+  content: "Click to reveal"; display: block; margin-top: .5em;
+  font: 600 clamp(11px,1.2vw,14px)/1 var(--mono); color: var(--accent-dk);
+}
+.card.qa.open::after { content: none; }
+/* A printed deck has nobody to click it, so print the answer. */
+@media print { .card.qa .a { display: block; } .card.qa::after { content: none; } }
+
+/* No motion on paper. Without this a delayed element prints at opacity 0 — a
+   blank slide in the handout, with nothing to say anything is wrong. This must
+   stay INSIDE a print block: an earlier version landed just after a one-line
+   `@media print { ... }` and so applied to the screen too, silently switching
+   the animation off everywhere. */
+@media print {
+  .slide, .slide > *, .slide > .cols > *, .slide.active > *, .slide.active > .cols > * {
+    animation: none !important; opacity: 1 !important; transform: none !important;
+  }
+  /* and inside the figures: a half-drawn arrow on paper is just a broken
+     arrow, and a box left mid-fade is a missing box. The engine sets these
+     inline, so !important is what beats it. */
+  .diagram [marker-end] {
+    animation: none !important; stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+  .diagram svg * { opacity: 1 !important; transition: none !important; transform: none !important; }
+}
+
+/* ---------- quiz -----------------------------------------------------------
+   Same progressive-enhancement deal as the recap cards: the correct answer is
+   marked in the SOURCE with class="right", so the .pptx and the printed PDF
+   both show which one it is. Only the screen keeps it hidden until clicked. */
+.quiz { list-style: none; padding: 0; margin: .5em 0; max-width: 74ch; }
+.quiz li {
+  font-size: clamp(15px, 1.85vw, 22px); line-height: 1.35;
+  padding: .62em .9em; margin: .42em 0; border-radius: 11px; cursor: pointer;
+  border: 1.5px solid var(--line-2); background: var(--bg); color: var(--ink-soft);
+  transition: border-color .12s, background .12s;
+}
+.quiz li:hover { border-color: var(--accent); color: var(--ink); }
+/* Once anything is picked, mark the right one and grey the rest. */
+.quiz.answered li { cursor: default; opacity: .55; }
+.quiz.answered li.right {
+  opacity: 1; background: var(--good-bg); border-color: var(--good); color: var(--ink); font-weight: 600;
+}
+.quiz.answered li.picked:not(.right) {
+  opacity: 1; background: var(--warn-bg); border-color: var(--warn-bd); color: var(--warn);
+}
+.quiz.answered li.right::after { content: " ✓"; color: var(--good); font-weight: 700; }
+
+/* Nobody can click a handout, so print the answer. */
+@media print {
+  .quiz li { opacity: 1; }
+  .quiz li.right { background: var(--good-bg); border-color: var(--good); font-weight: 600; }
+  .quiz li.right::after { content: " ✓"; color: var(--good); font-weight: 700; }
+}
+
+/* two-panel "Azure provides / you build" */
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: .4em; }
+.duo .p { border-left: 4px solid var(--accent); padding: 4px 0 4px 18px; }
+.duo .p.b { border-left-color: var(--good); }
+.duo .p h3 { margin: 0 0 .3em; font-size: clamp(15px,1.7vw,21px); color: var(--accent-dk); text-transform: none; letter-spacing: 0; font-family: var(--sans); font-weight: 700; }
+.duo .p p { color: var(--ink-soft); }
+
+/* lessons table */
+table.lessons { border-collapse: collapse; width: 100%; font-size: clamp(13px,1.5vw,19px); }
+table.lessons th, table.lessons td { text-align: left; padding: .40em .7em; border-bottom: 1px solid var(--line); }
+table.lessons th { color: var(--muted); font-weight: 700; font-size: .82em; text-transform: uppercase; letter-spacing: .06em; }
+table.lessons td { color: var(--ink-soft); }
+table.lessons td.n { color: var(--accent); font-family: var(--mono); font-weight: 700; width: 2.5em; }
+table.lessons td code { white-space: nowrap; }
+table.lessons tr:hover td { background: var(--panel); }
+
+.pill { display:inline-block; background: var(--good-bg); color: var(--good); border:1px solid var(--good-bd);
+        border-radius: 999px; padding: .12em .75em; font: 600 .8em/1.5 var(--mono); }
+.pill.w { background: var(--warn-bg); color: var(--warn); border-color: var(--warn-bd); }
+
+/* architecture diagram (pure CSS boxes) */
+.arch { display: flex; flex-direction: column; gap: 12px; margin-top: .3em; }
+.arch .row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.arch .box {
+  background: var(--bg); border: 1px solid var(--line-2); border-radius: 10px;
+  padding: 10px 16px; font-size: clamp(12px,1.4vw,17px); text-align: center; min-width: 120px;
+  color: var(--ink); box-shadow: var(--shadow-sm); font-weight: 550;
+}
+.arch .box.api { border-color: var(--accent); background: #e8f0fe; }
+.arch .box.you { border-color: var(--good); }
+.arch .box small { display:block; color: var(--muted); font-size: .78em; margin-top: 3px; font-weight: 400; }
+.arch .down { text-align:center; color: var(--line-2); font-size: 18px; line-height: .5; }
+
+.flow { display:flex; align-items:center; gap: 10px; flex-wrap: wrap; margin: .6em 0; font-size: clamp(13px,1.6vw,20px); }
+.flow .node { background: var(--bg); border:1px solid var(--line-2); border-radius: 9px; padding: 9px 15px; box-shadow: var(--shadow-sm); color: var(--ink); }
+.flow .arw { color: var(--accent); font-weight: 700; }
+.flow .node.guard { border-color: #f9ab00; background: var(--warn-bg); }
+.flow .node.model { border-color: var(--accent); background: #e8f0fe; }
+
+/* inline SVG diagrams (self-contained, no CDN) */
+.diagram { margin:.45em 0 .35em; }
+.diagram svg { display:block; width:100%; height:auto; max-height:36vh; }
+/* ---------- diagram trace ----------------------------------------------
+   A dot runs the flow once when the slide becomes active, so a static
+   picture reads as a journey. Hidden unless the slide is active, which also
+   keeps it out of the .pptx: the rasteriser renders each SVG standalone,
+   never inside a .slide.active, so the tracer never appears in the export. */
+.diagram .tracer { opacity: 0; }
+.slide.active .diagram.trace .tracer {
+  opacity: 1;
+  offset-path: path("M 80 142 H 902");
+  offset-rotate: 0deg;
+  animation: trace-run 2.6s cubic-bezier(.45,.05,.35,1) .45s 1 both;
+}
+@keyframes trace-run {
+  0%   { offset-distance: 0%;   opacity: 0; }
+  6%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+/* ---------- motion preferences -----------------------------------------
+   Nothing here honoured this before. A conference room is exactly where it
+   matters, so every animation in the deck degrades to an instant state. */
+@media (prefers-reduced-motion: reduce) {
+  .slide { animation: none !important; }
+  #progress-bar { transition: none !important; }
+  .slide.active .diagram.trace .tracer { animation: none !important; opacity: 0 !important; }
+}
+
+/* Opt-in for a slide whose diagram IS the content (e.g. the kitchen map). */
+.diagram.wide svg { max-height:44vh; }
+/* And for the one slide that is nothing BUT its diagram. */
+.diagram.wide.tall svg { max-height:58vh; }
+
+/* ---------- chrome: progress, nav, counter, hint ---------- */
+#progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--panel-2); z-index: 30; }
+#progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .3s ease; }
+
+#chrome { position: fixed; bottom: 16px; right: 20px; display: flex; align-items: center; gap: 10px; z-index: 30;
+          color: var(--muted); font: 600 14px/1 var(--mono); }
+#chrome button {
+  background: var(--bg); color: var(--ink-soft); border: 1px solid var(--line-2); border-radius: 8px;
+  width: 38px; height: 34px; font-size: 20px; cursor: pointer; transition: .15s; box-shadow: var(--shadow-sm);
+}
+#chrome button:hover { border-color: var(--accent); color: var(--accent); }
+#counter { min-width: 56px; text-align: center; }
+
+#hint { position: fixed; bottom: 18px; left: 20px; z-index: 30; color: var(--muted);
+        font: 500 12.5px/1 var(--mono); opacity: .8; }
+#hint b { color: var(--accent); }
+
+/* speaker notes */
+#notes {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: none;
+  background: #fbfcfe; border-top: 3px solid var(--accent); box-shadow: 0 -6px 20px rgba(16,32,64,.08);
+  padding: 16px 24px 22px; color: var(--ink-soft); font-size: clamp(14px,1.6vw,19px); line-height: 1.5;
+  max-height: 40vh; overflow: auto;
+}
+#notes.show { display: block; }
+#notes .lbl { font: 700 11px/1 var(--mono); color: var(--accent); letter-spacing: .2em; text-transform: uppercase; display:block; margin-bottom: 8px; }
+
+/* ---------- overview grid ---------- */
+body.overview #deck { position: fixed; inset: 0; padding: 40px; overflow: auto; display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; align-content: start; background: #ffffff; }
+body.overview .slide {
+  position: relative; inset: auto; display: flex; height: 175px; padding: 18px 20px; border: 1px solid var(--line);
+  border-radius: 12px; background: var(--bg); overflow: hidden; cursor: pointer; animation: none; box-shadow: var(--shadow-sm);
+}
+body.overview .slide::before { display: none; }
+body.overview .slide * { pointer-events: none; }
+body.overview .slide::after { content: attr(data-n); position: absolute; top: 8px; right: 12px; font: 700 12px/1 var(--mono); color: var(--accent); }
+body.overview .slide:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
+body.overview .slide.active { outline: 2px solid var(--accent); }
+body.overview .slide h1 { font-size: 22px; }
+body.overview .slide h2 { font-size: 18px; margin-top: 0; }
+body.overview .slide p, body.overview .slide li { font-size: 12px; }
+body.overview #chrome, body.overview #hint, body.overview #notes { display: none; }
+
+/* ---------- print / export to PDF (16:9, one slide per page) ---------- */
+@media print {
+  @page { size: 13.333in 7.5in; margin: 0; }
+  html, body { height: auto; overflow: visible; background: #fff; }
+  #progress, #chrome, #hint, #notes { display: none !important; }
+  #deck { position: static; inset: auto; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  .slide {
+    display: flex !important;
+    position: relative; inset: auto;
+    width: 13.333in; height: 7.5in;
+    padding: 0.55in 1in;
+    page-break-after: always; break-after: page; break-inside: avoid;
+    animation: none; overflow: hidden;
+  }
+  /* Print is a FIXED 7.5in box with overflow:hidden, so anything too tall is
+     silently clipped — no warning, no error, it just is not in the PDF. That
+     removed the code sample from four lesson slides (L1, L2, L6, L7) before
+     these rules existed: those slides carry a heading, a lead, a diagram,
+     bullets AND a code block, which fits the viewport but not the page.
+     Screen-layout overflow checks cannot catch this; measure the children's
+     bottoms against the padding box under these exact print dimensions. */
+  .diagram svg { max-height: 29vh; }
+  /* 43vh, not 44: at 44 the L3 and L4 concept slides pushed their code
+     block's bottom border past the print box — every line still legible,
+     the panel visibly cut, and no warning. Measured, not guessed. */
+  .diagram.wide svg { max-height: 43vh; }
+  .diagram.wide.tall svg { max-height: 56vh; }
+  ul.big li { margin-bottom: .28em; }
+  .slide p { margin-bottom: .34em; }
+  /* line-height and bottom padding matter more than font-size here: the
+     underscore sits at the very bottom of the glyph box, and a tight line box
+     plus `overflow` on <pre> shaved it clean off `run_durably` in the PDF while
+     leaving every other character intact. */
+  pre.tight {
+    font-size: 12.5px; line-height: 1.62;
+    padding: 9px 12px 12px; margin: .24em 0; overflow: visible;
+  }
+
+  .portraits { margin-bottom: 0.9em; }
+  .portrait { width: 132px; height: 132px; }
+  .portraits.big .portrait { width: 176px; height: 176px; }
+  .title .logo { width: 214px; margin-bottom: 1.1em; }
+
+  .slide:last-child { page-break-after: auto; break-after: auto; }
+  .slide:not(.title)::before { top: 0.55in; left: 1in; }
+}

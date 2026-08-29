@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Harness Engineering — quiz</title>
+  <link rel="stylesheet" href="slide.css" />
+  <link rel="stylesheet" href="live.css" />
+</head>
+<body>
+  <!-- The deck (content + engine) lives in slide.js. This shell just hosts it. -->
+  <div id="deck" aria-live="polite"></div>
+
+  <div id="progress"><div id="progress-bar"></div></div>
+
+  <nav id="chrome" aria-hidden="false">
+    <button id="prev" title="Previous (←)">‹</button>
+    <span id="counter">1 / 1</span>
+    <button id="next" title="Next (→)">›</button>
+  </nav>
+
+  <div id="hint">
+    ← → navigate &nbsp;·&nbsp; <b>o</b> overview &nbsp;·&nbsp; <b>s</b> notes &nbsp;·&nbsp; <b>f</b> fullscreen
+  </div>
+
+  <script>window.DECK_FILTER = "quiz";</script>
+  <script src="slide.js"></script>
+  <!-- Runnable code panels on the L1+/L2/docs slides. Optional: remove these
+       two lines and the deck still works, the panels just do not appear. -->
+</body>
+</html>

@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "The Guarded Request",
+    "subtitle": "Lesson 1 \u2014 guardrails wrap the model on the way in and out",
+    "output": "harness-request.html",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "User"
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "FastAPI",
+      "sublabel": "/chat"
+    },
+    {
+      "id": "safety",
+      "type": "security",
+      "label": "Guardrails",
+      "sublabel": "Prompt Shields"
+    },
+    {
+      "id": "agent",
+      "type": "cloud",
+      "label": "Agent",
+      "sublabel": "Agent Service"
+    },
+    {
+      "id": "model",
+      "type": "cloud",
+      "label": "Azure OpenAI"
+    },
+    {
+      "id": "tool",
+      "type": "backend",
+      "label": "Tool",
+      "sublabel": "sandboxed"
+    }
+  ],
+  "segments": [
+    {
+      "from": 160,
+      "to": 272,
+      "label": "01 / INPUT GUARD"
+    },
+    {
+      "from": 279,
+      "to": 532,
+      "label": "02 / TOOL LOOP"
+    },
+    {
+      "from": 538,
+      "to": 650,
+      "label": "03 / OUTPUT GUARD"
+    }
+  ],
+  "messages": [
+    {
+      "id": "post-chat",
+      "from": "user",
+      "to": "api",
+      "y": 205,
+      "label": "POST /chat",
+      "variant": "emphasis"
+    },
+    {
+      "id": "shield-in",
+      "from": "api",
+      "to": "safety",
+      "y": 233,
+      "label": "shield input",
+      "variant": "security"
+    },
+    {
+      "id": "shield-ok",
+      "from": "safety",
+      "to": "api",
+      "y": 261,
+      "label": "allowed",
+      "variant": "return"
+    },
+    {
+      "id": "run-agent",
+      "from": "api",
+      "to": "agent",
+      "y": 290,
+      "label": "run with tools",
+      "variant": "emphasis"
+    },
+    {
+      "id": "model-call",
+      "from": "agent",
+      "to": "model",
+      "y": 322,
+      "label": "model call"
+    },
+    {
+      "id": "wants-tool",
+      "from": "model",
+      "to": "agent",
+      "y": 352,
+      "label": "wants tool",
+      "variant": "return"
+    },
+    {
+      "id": "exec-tool",
+      "from": "agent",
+      "to": "tool",
+      "y": 386,
+      "label": "execute, isolated"
+    },
+    {
+      "id": "tool-result",
+      "from": "tool",
+      "to": "agent",
+      "y": 416,
+      "label": "result",
+      "variant": "return"
+    },
+    {
+      "id": "tool-back",
+      "from": "agent",
+      "to": "model",
+      "y": 450,
+      "label": "tool result"
+    },
+    {
+      "id": "final-answer",
+      "from": "model",
+      "to": "agent",
+      "y": 482,
+      "label": "final answer",
+      "variant": "return"
+    },
+    {
+      "id": "agent-resp",
+      "from": "agent",
+      "to": "api",
+      "y": 514,
+      "label": "response",
+      "variant": "return"
+    },
+    {
+      "id": "filter-out",
+      "from": "api",
+      "to": "safety",
+      "y": 556,
+      "label": "filter output",
+      "variant": "security"
+    },
+    {
+      "id": "filter-ok",
+      "from": "safety",
+      "to": "api",
+      "y": 588,
+      "label": "clean",
+      "variant": "return"
+    },
+    {
+      "id": "reply",
+      "from": "api",
+      "to": "user",
+      "y": 626,
+      "label": "200 reply",
+      "variant": "emphasis"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "api",
+      "from": 212,
+      "to": 632,
+      "type": "backend"
+    },
+    {
+      "participant": "agent",
+      "from": 296,
+      "to": 520,
+      "type": "cloud"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Hard-block policy",
+      "items": [
+        "empty \u00b7 oversize \u00b7 injection markers",
+        "folded re-check beats homoglyph tricks"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Local stand-ins today",
+      "items": [
+        "guardrails.check_input for Prompt Shields",
+        "stub agent reply behind /chat"
+      ]
+    }
+  ]
+}
