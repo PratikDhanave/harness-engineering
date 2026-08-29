@@ -22,7 +22,7 @@ from __future__ import annotations
 import re
 import unicodedata
 
-__all__ = ["fold_homoglyphs", "normalize", "squash"]
+__all__ = ["fold_homoglyphs", "is_letter_split", "normalize", "squash"]
 
 # Confusable letters NFKC does NOT fold (Cyrillic/Greek look-alikes → Latin).
 _HOMOGLYPHS = {
@@ -96,11 +96,38 @@ def squash(text: str) -> str:
     purpose is to resist exactly that. Removing the separators entirely is separator-agnostic,
     so it costs nothing to defeat the next one somebody invents.
 
-    Callers must squash the *marker* too, then substring-match. False positives are negligible
-    because the markers are long phrases: ``"ignorepreviousinstructions"`` does not occur by
-    accident. It is not free of cost — squashing also joins legitimately adjacent words, so a
-    marker could in principle match across a word boundary it did not mean to. With phrases this
-    long that has not happened, and the corpus in :mod:`harness.safety.redteam` is what would
-    show it if it started to.
+    Callers must squash the *marker* too, then substring-match.
+
+    **State the leak.** An earlier version of this docstring claimed the cost was theoretical —
+    that squashing "could in principle" join words it did not mean to, but that with phrases this
+    long it had not happened. It had. ``"Please do not ignore. Previous instructions were
+    unclear"`` squashes to ``…ignorepreviousinstructions…`` and was hard-blocked, and so was
+    ``"I will ignore previous. Instructions follow below."`` Both are things a person actually
+    writes. The sentence-ending full stop is exactly the separator this function is designed to
+    delete, and it cannot tell that one apart from the full stops in ``i.g.n.o.r.e``.
+
+    So squashing is no longer applied to arbitrary text. :func:`is_letter_split` gates it, and
+    only input that *carries the evasion signature* — a run of single characters held apart by
+    separators — is squashed. That keeps every probe in :mod:`harness.safety.redteam` blocked
+    while ordinary prose stops being collateral. The residual leak is narrower but real: an
+    attacker who letter-splits one word anywhere in a message re-enables squashing for the whole
+    of it, so a long enough message could still be joined across a boundary somewhere else.
     """
     return _NON_ALNUM.sub("", normalize(text))
+
+
+# Three or more single characters, each held apart by separators — "i g n o r e", "i.g.n.o.r.e",
+# "i-g-n-o-r-e". A word of two or more letters breaks the run at its own second character, which
+# is what keeps ordinary prose out: "do not ignore. Previous" never reaches three repetitions.
+_LETTER_SPLIT = re.compile(r"(?:[a-z0-9][^a-z0-9]+){3,}")
+
+
+def is_letter_split(text: str) -> bool:
+    """True when ``text`` shows the signature of a word split between its letters.
+
+    This is the gate on :func:`squash`. It answers "is this input the kind that separator-folding
+    was built for?", so the expensive-in-false-positives fold runs on evasions rather than on
+    every message. Deliberately a *signature*, not a proof: an acronym like ``U.S.A.`` trips it,
+    which costs nothing — it merely enables a check that then finds no marker.
+    """
+    return _LETTER_SPLIT.search(normalize(text)) is not None

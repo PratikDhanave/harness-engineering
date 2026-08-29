@@ -291,6 +291,12 @@ table.lessons td { color: var(--ink-soft); }
 table.lessons td.n { color: var(--accent); font-family: var(--mono); font-weight: 700; width: 2.5em; }
 table.lessons td code { white-space: nowrap; }
 table.lessons tr:hover td { background: var(--panel); }
+/* The glossary slide has ten rows and no vertical budget left: without a floor
+   under the name column, "Send work to the right place" and "Split work up and
+   watch it" each wrap to a second line, and the two extra line-heights push the
+   heading up into the accent rule that is absolutely positioned at 0.55in. That
+   collision is the only visible symptom — the print box clips in silence. */
+table.lessons.gloss th:nth-child(2), table.lessons.gloss td:nth-child(2) { width: 15em; }
 
 .pill { display:inline-block; background: var(--good-bg); color: var(--good); border:1px solid var(--good-bd);
         border-radius: 999px; padding: .12em .75em; font: 600 .8em/1.5 var(--mono); }

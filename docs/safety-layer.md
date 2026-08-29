@@ -33,7 +33,8 @@ so existing contracts hold), **then** two additions from this layer:
    homoglyph/zero-width disguise of a known marker still trips.
 2. **Separator-agnostic recheck** — re-runs the markers over `squash(text)`, which normalises and
    then strips *every* non-alphanumeric character, so a marker split by visible separators
-   (`i g n o r e`, `i.g.n.o.r.e`, `i-g-n-o-r-e`) still trips.
+   (`i g n o r e`, `i.g.n.o.r.e`, `i-g-n-o-r-e`) still trips. **Gated on `is_letter_split(text)`**,
+   so it only runs on input that carries the evasion signature — see the leak below.
 3. **Attack-family detectors** — `worst(text)` returns the highest-severity heuristic hit for
    shapes a flat marker list can't express.
 
@@ -114,12 +115,29 @@ these were allowed through.
   → "ignorepreviousinstructions"   → matches the squashed marker → BLOCK
 ```
 
-> Squashing joins legitimately adjacent words too, so a marker could in principle match across a
-> boundary it did not mean to. The markers are long phrases, which makes that unlikely, and the
-> benign probes cover the shapes most likely to trip it — `"ignore the previous email"`,
-> `"e.g. i.e. U.S.A."`, `"R-2-D-2"`. Covered by
-> `test_guardrail_blocks_letters_split_by_a_visible_separator` /
-> `test_squashing_does_not_over_block_ordinary_text`.
+> **The leak, restated after it bit.** This section used to say squashing "could in principle"
+> match across a boundary it did not mean to, and that long markers made it unlikely. It was not
+> unlikely — it was reproducible with ordinary English. A sentence-ending full stop is exactly the
+> separator `squash` exists to delete, and it cannot tell that one from the full stops in
+> `i.g.n.o.r.e`:
+>
+> ```
+> "Please do not ignore. Previous instructions were unclear"
+>   → squash → "...ignorepreviousinstructions..."   → BLOCK   (a real user, refused)
+> "I will ignore previous. Instructions follow below."
+>   → squash → "...ignorepreviousinstructions..."   → BLOCK
+> ```
+>
+> The fold is now gated: `is_letter_split(text)` looks for three or more single characters held
+> apart by separators, which is the shape of the evasion and not the shape of prose — a word of two
+> or more letters breaks the run at its own second character. All three evasion probes still block;
+> both sentences above now pass.
+>
+> **What still leaks.** The gate is a signature, not a proof, and it is whole-message: an attacker
+> who letter-splits one word anywhere re-enables squashing for the *entire* message, so a long
+> enough message could still be joined across a boundary elsewhere in it. Narrower than before,
+> not closed. Covered by `test_the_gate_still_lets_every_letter_split_through_to_the_fold` /
+> `test_prose_is_not_squashed_into_a_marker` / `test_the_gate_is_a_signature_not_a_verdict`.
 
 ---
 

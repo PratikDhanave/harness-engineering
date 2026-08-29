@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from harness.safety import normalize, squash, worst
+from harness.safety import is_letter_split, normalize, squash, worst
 
 
 @dataclass
@@ -77,12 +77,18 @@ def check_input(text: str) -> GuardrailResult:
     # Separator-agnostic pass. `normalize` rejoins a word split by an INVISIBLE character but
     # not one split by a visible separator, so "i g n o r e", "i.g.n.o.r.e" and "i-g-n-o-r-e"
     # all walked straight through. Squashing both sides to alphanumerics closes the family.
-    squashed = squash(text)
-    for marker in INJECTION_MARKERS:
-        if squash(marker) in squashed:
-            return GuardrailResult(
-                allowed=False, reason=f"possible prompt injection (separated): {marker!r}"
-            )
+    #
+    # Gated, because squashing deletes the separator it is aimed at and the full stop ending an
+    # ordinary sentence equally: "Please do not ignore. Previous instructions were unclear" was
+    # hard-blocked by this pass. `is_letter_split` asks whether the input carries the evasion
+    # signature at all, so prose is no longer folded on the chance that it might be an attack.
+    if is_letter_split(text):
+        squashed = squash(text)
+        for marker in INJECTION_MARKERS:
+            if squash(marker) in squashed:
+                return GuardrailResult(
+                    allowed=False, reason=f"possible prompt injection (separated): {marker!r}"
+                )
 
     # Heuristic attack families the flat marker list can't express (indirect injection, authority
     # escalation, role-play/jailbreak, disclosure suppression).

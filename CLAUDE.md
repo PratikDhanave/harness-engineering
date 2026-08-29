@@ -116,7 +116,7 @@ article draft, are covered). The globs do not recurse into subdirectories of `do
 under `docs/presentation/` or `docs/diagrams/` is tested. The heavier
 Mermaid render check is opt-in: `HARNESS_RENDER_MERMAID=1 uv run --extra dev pytest` (needs the
 `mmdc` mermaid-cli on PATH); it's skipped by default, which is why a green run shows a few skips
-(currently 174 passed, 3 skipped).
+(currently 187 passed, 3 skipped).
 
 Untested asset directories, so you can tell generated output from source: `docs/diagrams/` holds
 the README's archify repo map (typed `*.architecture.json` source + self-contained interactive
@@ -142,8 +142,8 @@ regenerating the base64 in place — do not add a file next to it.
 
 | Surface | Built by | Notes |
 |---|---|---|
-| Google browser deck | `index.html` + `slide.css` + `slide.js` | White, Google Blue `#4285F4`, no red. `--print-to-pdf` → `harness-engineering.pdf`, 64 slides @960×540 (the quizzes build separately) |
-| ClearRoute browser deck | `clearroute.html` + `clearroute.css` | A *skin* over slide.css — white paper, mint `#00E8AF` fills, deeper green `#009167` for text. `--print-to-pdf` → `harness-engineering-clearroute-talk.pdf`, 64 slides — **not** the preserved 24-slide `harness-engineering-clearroute.pdf` |
+| Google browser deck | `index.html` + `slide.css` + `slide.js` | White, Google Blue `#4285F4`, no red. `--print-to-pdf` → `harness-engineering.pdf`, 65 slides @960×540 (the quizzes build separately) |
+| ClearRoute browser deck | `clearroute.html` + `clearroute.css` | A *skin* over slide.css — white paper, mint `#00E8AF` fills, deeper green `#009167` for text. `--print-to-pdf` → `harness-engineering-clearroute-talk.pdf`, 65 slides — **not** the preserved 24-slide `harness-engineering-clearroute.pdf` |
 | Two `.pptx` builds | `scripts/deck_to_pptx.py [--theme=clearroute]` | Native editable text; the 6 inline-SVG diagrams are rasterised via headless Chrome |
 | Live-code demo page | `scripts/build_live_demo.py` | `live-demo.html` + `live-payload.js` |
 | The talk on the web | `scripts/build_web_talk.py [--theme=clearroute]` | `web-talk.html` (google) / `web-talk-clearroute.html` — paged like the deck, `s` toggles long-form reading, notes shown. **One output per theme**; they shared a filename until 21 Aug, so whichever build ran last silently overwrote the other |
@@ -194,21 +194,38 @@ the guardrail that blocks a homoglyph on a slide is the same `check_input` the s
 with no server) **and captures each demo's output by running it against local CPython** — if the
 Pyodide CDN is unreachable, the panel replays that real transcript and labels itself. Panels
 cover **all seven lessons**, via `data-demo` markers in `slide.js`; the `.pptx` parser
-skips unknown `<div>`s, so they are invisible to it. Measured slide positions — re-derive rather
-than trusting this line. They move whenever a slide is inserted, and a stale `// 7 —` comment in
-`slide.js` already caused one wrong report (the seam panel is on slide **9**, not 7):
+skips unknown `<div>`s, so they are invisible to it. Measured slide positions — **re-derive rather
+than trusting this table**; it has been wrong twice. They move whenever a slide is inserted, a
+stale `// 7 —` comment in `slide.js` already caused one wrong report, and the numbers below sat
+unrevised through the quiz expansion, which put every one of them out by 14 or more.
+
+Two numberings exist and they are not interchangeable. `SLIDES` currently holds **119** entries;
+the presented deck is the **65** that survive the `noquiz` filter (`'<ul class="quiz">' in html`),
+and that is what the PDFs and both `.pptx` paginate. The table below is the *presented* numbering.
+Derive both with:
+
+```bash
+uv run python3 -c "
+import re; h=re.findall(r'\n    html: \`(.*?)\`,\n', open('docs/presentation/slide.js').read(), re.S)
+nq=[x for x in h if '<ul class=\"quiz\">' not in x]; print(len(h),'array /',len(nq),'presented')
+[print(j, d.group(1)) for j,x in enumerate(nq,1) if (d:=re.search(r'data-demo=\"([^\"]+)\"',x))]"
+```
+
+Match the builder's own count (`parsed N slides` / `filter noquiz: N slides`) before believing a
+number — a quick regex that segments on the *whole* slide object rather than its `html` field
+misclassifies a slide whose **speaker note** quotes `<ul class="quiz">`, and silently undercounts.
 
 | Slide | Demo | What it runs |
 |---|---|---|
-| 11 | `seam` | three backends, one workflow, a widened seam rejected |
-| 16 | `guard` | L1 — the homoglyph the naive scan waves through |
-| 18 | `crash` | L2 — checkpoint, real page reload, resume |
-| 20 | `sandbox` | L3 — the browser refuses to spawn a process |
-| 22 | `memory` | L4 — thread (real sqlite3) · knowledge · summarise |
-| 24 | `router` | L5 — routes three, misses a paraphrase |
-| 26 | `supervisor` | L6 — fan-out, one sub-agent fails, the batch survives |
-| 28 | `hitl` | L7 — approve · reject · a late yes is void |
-| 29 | `redteam` | the red-team corpus scored |
+| 25 | `seam` | three backends, one workflow, a widened seam rejected |
+| 30 | `guard` | L1 — the homoglyph the naive scan waves through |
+| 32 | `crash` | L2 — checkpoint, real page reload, resume |
+| 34 | `sandbox` | L3 — the browser refuses to spawn a process |
+| 37 | `memory` | L4 — thread (real sqlite3) · knowledge · summarise |
+| 41 | `router` | L5 — routes three, misses a paraphrase |
+| 44 | `supervisor` | L6 — fan-out, one sub-agent fails, the batch survives |
+| 47 | `hitl` | L7 — approve · reject · a late yes is void |
+| 51 | `redteam` | the red-team corpus scored |
 
 **Each lesson is two slides: concept, then example.** The concept slide carries the
 before/after diagram, one line of small print and a 2-4 line signature; the **example slide**
@@ -252,11 +269,27 @@ Verified in a real browser, not by inspection — a headless probe clicks a wron
 asserts the computed backgrounds actually change. Do that again if you touch the markup;
 "the class is in the file" is not evidence the click works.
 
-**Slides 2 and 3 define the terms before anything else** (24 Aug 2026): *an agent is a
+**The pair that defines the terms comes before anything else** (24 Aug 2026) — *an agent is a
 model plus a harness*, then the six things a harness actually provides. Without a harness you
 have one-off, transactional inference calls — ask, answer, forget. Everything after those two
 slides is an answer to "so what goes in the harness", so do not reorder them behind the
-analogy slides.
+analogy slides. They were slides 2 and 3 when that was written; the front of the deck has grown
+since, and they are now 7 and 8.
+
+**Slide 6, "The words we will use", is a reference card, not a teaching slide** (29 Aug 2026).
+Ten rows: *harness* and *durable execution* defined, then the seven patterns in the same verb
+phrasings the rest of the deck uses, so the vocabulary never shifts under a student. It sits
+*before* the definitional pair on purpose — the room gets the words on arrival and can come back
+to one page rather than hunting. Two things to preserve:
+
+- **The seven rows must stay verbatim identical to the names used elsewhere** (slide 17's "You
+  already use all seven", and each lesson's own title). The whole value is that they match; a
+  reworded row here silently teaches two names for one thing.
+- **It has no vertical budget left.** It fills the print box almost exactly, and the first cut
+  overflowed *upward* — the `h2` rose into the accent rule that `@media print` pins at `0.55in`,
+  and that collision was the only visible symptom. `table.lessons.gloss` gives the name column a
+  `15em` floor so two rows do not wrap to a second line each; without it the page is over. If you
+  add a row, take a line out somewhere else, then re-render page 6 and **look at it**.
 
 **L4 shows four kinds of memory, and the repo builds three.** The diagram names short-term,
 long-term, scratch pad and facts because that is what a harness handles; `memory/` implements

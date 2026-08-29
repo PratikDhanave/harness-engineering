@@ -323,4 +323,4 @@ There's a talk that goes with it, and the guardrail runs live in the browser, so
 
 *Pratik Dhanave is an engineer at ClearRoute, working on quality engineering, cloud platforms, and developer experience — and a top contributor to Microsoft Agent Framework Go. [pratikdhanave.com](https://pratikdhanave.com/)*
 
-*Akshay Shrivastav is a full-stack engineer at ClearRoute with a decade of building scalable applications — microservices, enterprise delivery, leading teams and code reviews. [akshayshrivastav.me](https://akshayshrivastav.me/)*
+*Akshay Shrivastav is a Solutions and Software Architect at ClearRoute, building applications to enterprise standards of performance, security and usability, and leading teams and strategic partnerships. [akshayshrivastav.me](https://akshayshrivastav.me/)*
