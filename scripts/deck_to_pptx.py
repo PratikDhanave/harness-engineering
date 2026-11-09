@@ -99,6 +99,26 @@ THEMES = {
             "#c9ddfc": "#A8EBD6", "#ceead6": "#A8EBD6",
         },
     },
+    "devfest": {
+        "out": "harness-engineering-devfest.pptx",
+        # DevFest 2026 template ("[External] DevFest 2026 - Presentation
+        # Template"): Google Sans Bold headlines, Roboto Mono Light subheads,
+        # Black 02 ink (#1e1e1e), the Google 500s as accents with the
+        # template's pastel/halftone pairs for good/warn fills, off-white
+        # (#f0f0f0) panels on white paper. Font NAMES are forced rather than
+        # probed: the .pptx is destined for Google Slides, where Google Sans
+        # and Roboto Mono exist even when this machine lacks them.
+        "bg": 0xFFFFFF, "card": 0xFFFFFF, "on_accent": 0xFFFFFF,
+        "ink": 0x1E1E1E, "ink_soft": 0x3C4043, "muted": 0x5F6368,
+        "accent": 0x4285F4, "accent_dk": 0x1A73E8, "good": 0x34A853, "warn": 0xB06000,
+        "panel": 0xF0F0F0, "line": 0xE8EAED, "line2": 0xDADCE0,
+        "good_bg": 0xCCF6C5, "good_bd": 0x5CDB6D, "warn_bg": 0xFFE7A5, "warn_bd": 0xFFD427,
+        "code_c": 0x8A94A8,
+        "sans": "Google Sans", "mono": "Roboto Mono",
+        "subhead_mono": True,  # DevFest subheads are Roboto Mono
+        "w_in": 13.333, "h_in": 7.5, "pad_x": 1.0, "pad_y": 0.55, "scale": 1.0,
+        "svg_bg": "#ffffff", "svg_map": {},
+    },
 }
 
 THEME: dict = {}
@@ -649,6 +669,9 @@ def draw_block(s, b: Block, x: int, y: int, w: int, scale: float, in_card: bool 
         bar.line.fill.background(); bar.shadow.inherit = False
         _, tf = textbox(s, x + int(Inches(0.46)), y, w, h)
         add_runs(tf.paragraphs[0], b.runs, SZ["kicker"], ACCENT_DK, bold=True)
+        if THEME.get("subhead_mono"):
+            for r in tf.paragraphs[0].runs:
+                r.font.name = MONO
     elif b.kind == "h1":
         _, tf = textbox(s, x, y, w, h)
         p = tf.paragraphs[0]
@@ -660,6 +683,9 @@ def draw_block(s, b: Block, x: int, y: int, w: int, scale: float, in_card: bool 
         _, tf = textbox(s, x, y, min(w, int(Inches(8.6))), h)
         add_runs(tf.paragraphs[0], b.runs, SZ["sub"] * scale, MUTED)
         tf.paragraphs[0].line_spacing = 1.32
+        if THEME.get("subhead_mono"):
+            for r in tf.paragraphs[0].runs:
+                r.font.name = MONO
     elif b.kind == "meta":
         rule_y = y + int(Inches(0.394))
         ln = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, Emu(x), Emu(rule_y), Inches(5.6), Emu(9525))
