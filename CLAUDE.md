@@ -199,8 +199,8 @@ than trusting this table**; it has been wrong twice. They move whenever a slide 
 stale `// 7 —` comment in `slide.js` already caused one wrong report, and the numbers below sat
 unrevised through the quiz expansion, which put every one of them out by 14 or more.
 
-Two numberings exist and they are not interchangeable. `SLIDES` currently holds **119** entries;
-the presented deck is the **65** that survive the `noquiz` filter (`'<ul class="quiz">' in html`),
+Two numberings exist and they are not interchangeable. `SLIDES` currently holds **122** entries;
+the presented deck is the **68** that survive the `noquiz` filter (`'<ul class="quiz">' in html`),
 and that is what the PDFs and both `.pptx` paginate. The table below is the *presented* numbering.
 Derive both with:
 
@@ -217,15 +217,18 @@ misclassifies a slide whose **speaker note** quotes `<ul class="quiz">`, and sil
 
 | Slide | Demo | What it runs |
 |---|---|---|
-| 25 | `seam` | three backends, one workflow, a widened seam rejected |
-| 30 | `guard` | L1 — the homoglyph the naive scan waves through |
-| 32 | `crash` | L2 — checkpoint, real page reload, resume |
-| 34 | `sandbox` | L3 — the browser refuses to spawn a process |
-| 37 | `memory` | L4 — thread (real sqlite3) · knowledge · summarise |
-| 41 | `router` | L5 — routes three, misses a paraphrase |
-| 44 | `supervisor` | L6 — fan-out, one sub-agent fails, the batch survives |
-| 47 | `hitl` | L7 — approve · reject · a late yes is void |
-| 51 | `redteam` | the red-team corpus scored |
+| 22 | `loop` | the agent loop — a helpful model, then one that never says done |
+| 25 | `tool` | a tool schema built from the function, bad arguments rejected |
+| 27 | `seam` | three backends, one workflow, a widened seam rejected |
+| 32 | `normalize` | L1 — four disguises of one phrase, folding makes the list hold |
+| 33 | `guard` | L1 — the homoglyph the naive scan waves through |
+| 35 | `crash` | L2 — checkpoint, real page reload, resume |
+| 37 | `sandbox` | L3 — the browser refuses to spawn a process |
+| 40 | `memory` | L4 — thread (real sqlite3) · knowledge · summarise |
+| 44 | `router` | L5 — routes three, misses a paraphrase |
+| 47 | `supervisor` | L6 — fan-out, one sub-agent fails, the batch survives |
+| 50 | `hitl` | L7 — approve · reject · a late yes is void |
+| 54 | `redteam` | the red-team corpus scored |
 
 **Each lesson is two slides: concept, then example.** The concept slide carries the
 before/after diagram, one line of small print and a 2-4 line signature; the **example slide**
