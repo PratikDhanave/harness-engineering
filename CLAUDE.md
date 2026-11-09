@@ -199,8 +199,8 @@ than trusting this table**; it has been wrong twice. They move whenever a slide 
 stale `// 7 —` comment in `slide.js` already caused one wrong report, and the numbers below sat
 unrevised through the quiz expansion, which put every one of them out by 14 or more.
 
-Two numberings exist and they are not interchangeable. `SLIDES` currently holds **122** entries;
-the presented deck is the **68** that survive the `noquiz` filter (`'<ul class="quiz">' in html`),
+Two numberings exist and they are not interchangeable. `SLIDES` currently holds **110** entries;
+the presented deck is the **56** that survive the `noquiz` filter (`'<ul class="quiz">' in html`),
 and that is what the PDFs and both `.pptx` paginate. The table below is the *presented* numbering.
 Derive both with:
 
@@ -224,11 +224,11 @@ misclassifies a slide whose **speaker note** quotes `<ul class="quiz">`, and sil
 | 33 | `guard` | L1 — the homoglyph the naive scan waves through |
 | 35 | `crash` | L2 — checkpoint, real page reload, resume |
 | 37 | `sandbox` | L3 — the browser refuses to spawn a process |
-| 40 | `memory` | L4 — thread (real sqlite3) · knowledge · summarise |
-| 44 | `router` | L5 — routes three, misses a paraphrase |
-| 47 | `supervisor` | L6 — fan-out, one sub-agent fails, the batch survives |
-| 50 | `hitl` | L7 — approve · reject · a late yes is void |
-| 54 | `redteam` | the red-team corpus scored |
+| 39 | `memory` | L4 — thread (real sqlite3) · knowledge · summarise |
+| 41 | `router` | L5 — routes three, misses a paraphrase |
+| 43 | `supervisor` | L6 — fan-out, one sub-agent fails, the batch survives |
+| 45 | `hitl` | L7 — approve · reject · a late yes is void |
+| 49 | `redteam` | the red-team corpus scored |
 
 **Each lesson is two slides: concept, then example.** The concept slide carries the
 before/after diagram, one line of small print and a 2-4 line signature; the **example slide**
@@ -242,8 +242,11 @@ patterns are named as verbs — check, survive, isolate, remember, route, split 
 old names survive in `docs/` and in the code. **Do not quietly re-raise the register**; if a
 slide needs a term, gloss it on the slide or leave it in the notes.
 
-**An eighteen-slide recap closes the talk (24 Aug 2026): thirty multiple-choice quizzes then two
-click-to-reveal card slides.** The author chose to keep the quiz bank *in the deck* rather than
+**The quiz bank is handout-only now.** The click-to-reveal "Check yourself" card slides (twelve
+by the end) were removed from the presented deck on 9 Nov 2026 at the author's request; the
+multiple-choice bank stays in `SLIDES` but is seen only through the quiz surfaces (`quiz.html`,
+the `-quiz` .pptx/.pdf) — the `noquiz` filter keeps it out of the talk, as before. The author
+chose to keep the quiz bank *in the deck source* rather than
 split it into a companion artifact, and to include the Vercel AI SDK questions. Two consequences
 to hold on to:
 

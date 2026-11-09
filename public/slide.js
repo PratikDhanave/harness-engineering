@@ -1346,30 +1346,6 @@ r.timed_out          <span class="c"># True — the clock stopped it</span>
   {
     html: `
 
-      <h2>Check yourself &#8212; how the code is kept apart</h2>
-      <p class="lead">Three about the machinery underneath pattern 3.</p>
-      <div class="cols three">
-        <div class="card qa">
-          <h3>What actually keeps it apart?</h3>
-          <p class="a">It runs as a <b>separate program</b>, not inside yours &#8212; its own interpreter, started so that it <b>ignores your installed packages and your environment</b>. <b>Whatever you do not pass in, it does not have.</b></p>
-        </div>
-        <div class="card qa">
-          <h3>Why a whole process, and not just a locked-down namespace?</h3>
-          <p class="a">Because <b>you can kill a process.</b> Python cannot safely stop a thread or a running <code>exec</code> half-way &#8212; an infinite loop inside your own program is yours forever. <b>Separate process is what makes the time limit real.</b></p>
-        </div>
-        <div class="card qa">
-          <h3>Why hand back <code>ok=True</code> or <code>ok=False</code>?</h3>
-          <p class="a">Because the thing reading it is a model. One unambiguous flag beats making it infer failure from the shape of an error string. <b>Say plainly whether it worked</b>, then give the output or the error.</p>
-        </div>
-      </div>
-      <p class="small">Ours returns exactly that &#8212; <code>SandboxResult(ok, stdout, stderr, exit_code, timed_out)</code>. <b>And it is not a security boundary</b>: it shares the filesystem and network, caps neither memory nor CPU, and the timeout kills only the child it started, so anything that child spawns outlives it. <span class="k">The real answer is a managed sandbox</span> &#8212; Foundry Code Interpreter, or Container Apps dynamic sessions.</p>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
       <h2><span class="num">L4</span>Remember things</h2>
       <p class="lead">Memory is not one thing. There are four kinds, and they are not interchangeable.</p>
       <div class="diagram wide"><svg viewBox="0 0 960 306" role="img" aria-label="Without memory every message starts from nothing; with it the agent keeps three kinds"><style>text{font-family:'Google Sans','Product Sans',Roboto,system-ui,sans-serif}</style><defs><marker id="p4b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b06000"/></marker><marker id="p4g" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#188038"/></marker></defs><rect x="10" y="0" width="124" height="30" rx="8" fill="#ffffff" stroke="#dadce0" stroke-width="1.4"/><text x="72" y="20" text-anchor="middle" font-size="13.5" font-weight="500" fill="#5f6368">1 Check</text><rect x="146" y="0" width="124" height="30" rx="8" fill="#ffffff" stroke="#dadce0" stroke-width="1.4"/><text x="208" y="20" text-anchor="middle" font-size="13.5" font-weight="500" fill="#5f6368">2 Survive</text><rect x="282" y="0" width="124" height="30" rx="8" fill="#ffffff" stroke="#dadce0" stroke-width="1.4"/><text x="344" y="20" text-anchor="middle" font-size="13.5" font-weight="500" fill="#5f6368">3 Isolate</text><rect x="418" y="0" width="124" height="30" rx="8" fill="#4285f4" stroke="#4285f4" stroke-width="1.4"/><text x="480" y="20" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">4 Remember</text><rect x="554" y="0" width="124" height="30" rx="8" fill="#ffffff" stroke="#dadce0" stroke-width="1.4"/><text x="616" y="20" text-anchor="middle" font-size="13.5" font-weight="500" fill="#5f6368">5 Route</text><rect x="690" y="0" width="124" height="30" rx="8" fill="#ffffff" stroke="#dadce0" stroke-width="1.4"/><text x="752" y="20" text-anchor="middle" font-size="13.5" font-weight="500" fill="#5f6368">6 Split up</text><rect x="826" y="0" width="124" height="30" rx="8" fill="#ffffff" stroke="#dadce0" stroke-width="1.4"/><text x="888" y="20" text-anchor="middle" font-size="13.5" font-weight="500" fill="#5f6368">7 Ask</text><rect x="10" y="46" width="452" height="252" rx="12" fill="#fef7e0" stroke="#f9ab00" stroke-width="1.6"/><text x="32" y="74" font-size="16" font-weight="600" fill="#b06000">Without it</text><rect x="34" y="90" width="404" height="40" rx="9" fill="#ffffff" stroke="#f9ab00" stroke-width="1.3"/><text x="236" y="116" text-anchor="middle" font-size="15.5" fill="#202124">I bought this last Tuesday</text><line x1="236" y1="130" x2="236" y2="144" stroke="#b06000" stroke-width="1.6" marker-end="url(#p4b)"/><rect x="34" y="146" width="404" height="40" rx="9" fill="#ffffff" stroke="#f9ab00" stroke-width="1.3"/><text x="236" y="172" text-anchor="middle" font-size="15.5" fill="#202124">Which order do you mean?</text><line x1="236" y1="186" x2="236" y2="200" stroke="#b06000" stroke-width="1.6" marker-end="url(#p4b)"/><rect x="34" y="202" width="404" height="40" rx="9" fill="#ffffff" stroke="#f9ab00" stroke-width="1.3"/><text x="236" y="228" text-anchor="middle" font-size="15.5" fill="#202124">The one I just told you about</text><text x="236" y="278" text-anchor="middle" font-size="16" font-weight="600" fill="#b06000">Every message starts from nothing</text><rect x="498" y="46" width="452" height="252" rx="12" fill="#e6f4ea" stroke="#ceead6" stroke-width="1.6"/><text x="520" y="74" font-size="16" font-weight="600" fill="#188038">With it</text><rect x="522" y="84" width="404" height="34" rx="9" fill="#ffffff" stroke="#ceead6" stroke-width="1.3"/><text x="724" y="106" text-anchor="middle" font-size="14" fill="#202124">Short-term — what we just said</text><line x1="724" y1="118" x2="724" y2="126" stroke="#188038" stroke-width="1.6" marker-end="url(#p4g)"/><rect x="522" y="128" width="404" height="34" rx="9" fill="#ffffff" stroke="#ceead6" stroke-width="1.3"/><text x="724" y="150" text-anchor="middle" font-size="14" fill="#202124">Long-term — what it learned before</text><line x1="724" y1="162" x2="724" y2="170" stroke="#188038" stroke-width="1.6" marker-end="url(#p4g)"/><rect x="522" y="172" width="404" height="34" rx="9" fill="#ffffff" stroke="#ceead6" stroke-width="1.3"/><text x="724" y="194" text-anchor="middle" font-size="14" fill="#202124">Scratch pad — working notes, this task only</text><line x1="724" y1="206" x2="724" y2="214" stroke="#188038" stroke-width="1.6" marker-end="url(#p4g)"/><rect x="522" y="216" width="404" height="34" rx="9" fill="#ffffff" stroke="#ceead6" stroke-width="1.3"/><text x="724" y="238" text-anchor="middle" font-size="14" fill="#202124">Facts — what the company knows</text><text x="724" y="278" text-anchor="middle" font-size="16" font-weight="600" fill="#188038">Four kinds, four lifetimes</text></svg></div>
@@ -1422,30 +1398,6 @@ summarize_thread(history, max_chars=120, keep=1)
   {
     html: `
 
-      <h2>Check yourself &#8212; keeping it small</h2>
-      <p class="lead">Three about squeezing the conversation down.</p>
-      <div class="cols three">
-        <div class="card qa">
-          <h3>What is compaction for?</h3>
-          <p class="a">Keeping the model under its limit without the user noticing. <b>They still see the whole chat on screen</b> &#8212; the model is being handed a shortened version: recent turns in full, older ones rolled up. <b>Two different views of one conversation.</b></p>
-        </div>
-        <div class="card qa">
-          <h3>Characters or tokens?</h3>
-          <p class="a">The model counts <b>tokens</b>, not characters. A rough rule is <b>four characters to a token</b>, but the real ratio depends on the model&#8217;s own tokeniser, so anything that must be exact should count with the <b>same</b> tokeniser the model uses &#8212; for OpenAI and Azure OpenAI models, that is <code>tiktoken</code>.</p>
-        </div>
-        <div class="card qa">
-          <h3>Why not stream the summary?</h3>
-          <p class="a">Because <b>nobody is reading it.</b> Streaming exists so a human sees words sooner; a summary is plumbing, and the next step cannot start until all of it exists. <b>Stream what is watched, wait for what is used.</b></p>
-        </div>
-      </div>
-      <p class="small">Ours counts characters, not tokens &#8212; <code>summarize_thread(messages, max_chars=500, keep=2)</code>. <span class="k">Good enough to demonstrate, wrong to bill against.</span> It keeps the first and last turns and rolls up the middle, which is the same instinct as the slide before.</p>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
       <h2>Quick quiz &#8212; what you are allowed to drop</h2>
       <p class="lead">The history is too long, so something has to go. What is the smallest piece you can safely remove? Pick one.</p>
       <ul class="quiz">
@@ -1455,26 +1407,6 @@ summarize_thread(history, max_chars=120, keep=1)
         <li>4 &nbsp; Half the list, whenever it gets too long</li>
       </ul>
       <p class="small">A tool call and its result are joined by an id, and the result must come <b>immediately after</b> &#8212; nothing may be slipped in between. <b>Cut between them and you leave a question with no answer</b> &#8212; most models reject the list outright, and the ones that do not get confused. <span class="k">So you group the messages into turns, add up the whole lot to see if you are over, and roll up entire turns.</span></p>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
-      <h2>Check yourself &#8212; when, and how much</h2>
-      <p class="lead">Two on the timing of it.</p>
-      <div class="cols">
-        <div class="card qa">
-          <h3>Why compact <i>before</i> the call, not after?</h3>
-          <p class="a">Because a call that is already over the limit <b>does not come back</b> &#8212; it fails, and afterwards is too late to help it. So you measure first, shrink if you must, and only then call. <b>Check the door frame before you carry the sofa at it.</b></p>
-        </div>
-        <div class="card qa">
-          <h3>How much do you take off?</h3>
-          <p class="a">Not all of it. You slide the <b>oldest turn off the front</b>, measure again, and stop as soon as you fit &#8212; keeping the recent turns whole, because those are the ones being used. <b>Take the least that solves it.</b></p>
-        </div>
-      </div>
-      <p class="small">Compacting is itself a model call, so it is not free and you do not do it every turn &#8212; only when the count says you must. <span class="k">A summary is also lossy and one-way</span>, so throw away as little as will fit, and never let the summary be the only copy.</p>
     `,
     notes: ""
   },
@@ -1532,30 +1464,6 @@ Router({"won't build": Specialist.CODE}).route(...)
   {
     html: `
 
-      <h2>Check yourself &#8212; two ways to use more than one</h2>
-      <p class="lead">Pattern 5 and pattern 6 both bring in another agent. They are not the same move.</p>
-      <div class="cols three">
-        <div class="card qa">
-          <h3>What is a handoff?</h3>
-          <p class="a">You pass the whole job to someone better suited, and <b>step out</b>. Billing takes it from here; you are not in the conversation any more. <b>One transfer, and the first agent is done.</b></p>
-        </div>
-        <div class="card qa">
-          <h3>What are subagents?</h3>
-          <p class="a">You <b>stay in charge</b>. You split the job, send the pieces out, and put the answers back together yourself. The person asking only ever deals with you &#8212; <b>you are still the one holding it.</b></p>
-        </div>
-        <div class="card qa">
-          <h3>So what makes one agent different from another?</h3>
-          <p class="a">Almost nothing: <b>a name, its instructions, and the tools it may use.</b> The loop, the saving, the guardrails &#8212; all shared. <b>A specialist is a configuration, not a rewrite.</b></p>
-        </div>
-      </div>
-      <p class="small">Ask &#8220;who answers the next question?&#8221; and the difference is obvious. <span class="k">Ours are thinner than that</span>: the router returns a decision rather than truly transferring control, and the workers are a plugged-in function, not seven whole agents.</p>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
       <h2>Quick quiz &#8212; where a handoff has to happen</h2>
       <p class="lead">You give the agent a &#8220;hand over to billing&#8221; tool. It calls it. What actually happens? Pick one.</p>
       <ul class="quiz">
@@ -1599,30 +1507,6 @@ agg.succeeded, agg.failed  <span class="c"># 2, 1</span>
 <span class="c">#   this browser cannot run things side by side, so here</span>
 <span class="c">#   the isolation is real and the speed-up is not</span></pre>
       <div data-demo="supervisor" data-compact data-code data-label="▶ Run this example"></div>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
-      <h2>Check yourself &#8212; when splitting actually pays</h2>
-      <p class="lead">Three about the cases where more than one really is the answer.</p>
-      <div class="cols three">
-        <div class="card qa">
-          <h3>Which jobs divide well?</h3>
-          <p class="a">Ones where the pieces <b>cannot tread on each other</b>. Changing code is the clean case &#8212; give each worker <b>its own copy</b> of the project and they never collide. Looking things up is the other: five searches have nothing to argue about.</p>
-        </div>
-        <div class="card qa">
-          <h3>The reason nobody mentions</h3>
-          <p class="a">It is not only speed &#8212; it is <b>room</b>. Each worker fills up its own context doing the digging, and hands back <b>a summary</b>. Five deep investigations, and the one in charge still has a clear desk.</p>
-        </div>
-        <div class="card qa">
-          <h3>Write the plan down</h3>
-          <p class="a">Not a thought that scrolls away &#8212; <b>a real thing you saved</b>, that the manager works through and you can read. And <b>the person chooses</b> to work this way; it is not the model deciding it feels like a big job today.</p>
-        </div>
-      </div>
-      <p class="small">All three are patterns you have already met wearing different hats: <span class="k">isolation, memory, and something written down that outlives the conversation.</span></p>
     `,
     notes: ""
   },
@@ -2033,152 +1917,6 @@ resume(run_id, True,  store, now=7200.0, action=issue_refund)
         <tr><td class="n">7</td><td><b>Human-in-the-loop</b>, often shortened to <b>HITL</b></td></tr>
       </table>
       <p class="small">Two more from this repo, because you will see them in the code: a <b>seam</b> is the swap point where the local version and the Azure one plug in, and <b>state the leak</b> is the rule that every stand-in must say where it is weaker than the real thing.</p>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
-      <h2>Check yourself — the words</h2>
-      <p class="lead">Four questions. Have a go before the answer appears.</p>
-      <div class="cols">
-        <div class="card qa">
-          <h3>What is a harness?</h3>
-          <p class="a">The infrastructure that makes an agent work beyond simple model calls: memory, tool calling, long-running jobs that survive, self-healing, guardrails, approvals. Without it you have transactional calls to a model, not an agent.</p>
-        </div>
-        <div class="card qa">
-          <h3>How do an agent, a model and a harness relate?</h3>
-          <p class="a">An agent <b>is</b> a model plus a harness. Take the harness away and you are left with one-off calls: ask, answer, forget. The harness is what turns a model into a working agent.</p>
-        </div>
-        <div class="card qa">
-          <h3>What does a harness provide?</h3>
-          <p class="a">Conversation, memory, tool management, durable execution for long jobs, self-healing and resilience, a choice of architectures — plus guardrails on the way in and an approval step before anything risky.</p>
-        </div>
-      </div>
-      <p class="small">Printed copies show the answers; on screen they wait for a click.</p>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
-      <h2>Check yourself &#8212; the hard parts</h2>
-      <p class="lead">Three that people most often get wrong.</p>
-      <div class="cols three">
-        <div class="card qa">
-          <h3>What is durable execution?</h3>
-          <p class="a">Work that keeps going regardless of who is connected. It saves where it got to as it goes, so a crash, a restart or someone closing their laptop does not lose it — it picks up from the last save rather than the beginning. <b>The run does not belong to the connection.</b></p>
-        </div>
-        <div class="card qa">
-          <h3>Why append every reply back onto the message list?</h3>
-          <p class="a">Because the model remembers nothing between calls — you resend the whole conversation every time. Leave out what it just said, or the result of a tool it just called, and the next turn has no record that any of it happened: it repeats itself, or loses the thread. <b>The list is the memory.</b></p>
-        </div>
-        <div class="card qa">
-          <h3>What kinds of memory does a harness handle?</h3>
-          <p class="a">Four. <b>Short-term</b> — this conversation. <b>Long-term</b> — what it learned before. <b>Scratch pad</b> — working notes for one task, thrown away after. <b>Facts</b> — what the organisation knows, looked up rather than guessed. They have different lifetimes, so they need different storage.</p>
-        </div>
-      </div>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
-      <h2>Check yourself &#8212; the hard parts, continued</h2>
-      <p class="lead">Two more of the same kind.</p>
-      <div class="cols">
-        <div class="card qa">
-          <h3>What is the description on a tool argument for?</h3>
-          <p class="a">It is <b>a prompt, not documentation</b> — the model reads it to work out what goes in the field. A model will guess an obvious <code>item_id</code>. It will not guess a name that is ambiguous, one that means something different elsewhere in your system, or a value it has to go and fetch first. <b>Those are the ones to describe</b>, in the words you would use to a new colleague — and how far you can lean on it depends on the model.</p>
-        </div>
-        <div class="card qa">
-          <h3>Why does a long job need durable execution?</h3>
-          <p class="a">Because the user will close the app. A ten-minute piece of research has to keep running without them, be there with progress when they come back, and tell them when it is done. Saving after each step is what makes that possible — and it is the same machinery that survives a crash.</p>
-        </div>
-      </div>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
-      <h2>Check yourself &#8212; the loop, up close</h2>
-      <p class="lead">Three that only bite once you try to make a real agent durable.</p>
-      <div class="cols three">
-        <div class="card qa">
-          <h3>Why wrap the model call itself in a step?</h3>
-          <p class="a">Two reasons, and the second is the real one. It is slow and you already paid for it, so a resume should not buy it twice. But the model is also <b>not deterministic</b> — ask again and you may get a different answer, and the run takes a different path. Recording the result means a replay follows the route it took the first time. <b>Cheaper is the bonus; faithful is the point.</b></p>
-        </div>
-        <div class="card qa">
-          <h3>How do you <i>start</i> a durable workflow?</h3>
-          <p class="a">Not by calling it. You <b>hand the function to the engine</b>, with its arguments, and the engine runs it — so it can record that it started, survive a restart, and be resumed later by id. Call it directly and you have an ordinary function that dies with the process. <b>The exact spelling differs by library; the handover is the idea.</b></p>
-        </div>
-        <div class="card qa">
-          <h3>When do several operations belong in <i>one</i> step?</h3>
-          <p class="a">When they have to happen <b>together or not at all</b>. The clearest case: the event announcing a thing belongs in the same step as the thing. Split them and a crash in between leaves a client showing an action that never happened — or an action nobody was told about. <b>A step is the unit that replays; draw it round what must stay consistent.</b></p>
-        </div>
-      </div>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
-      <h2>Check yourself &#8212; the loop, continued</h2>
-      <p class="lead">Two more, about control and cost.</p>
-      <div class="cols">
-        <div class="card qa">
-          <h3>What is &#8220;code mode&#8221;?</h3>
-          <p class="a">Instead of picking one tool at a time, the model <b>writes a program</b> that calls them — looping, filtering, chaining calls in one go instead of burning a turn on each. A job that took a dozen turns of ask-wait-think becomes <b>one execution</b>. It is also exactly why pattern 3 exists: <b>the moment it is writing code rather than choosing from a menu, something has to run that code somewhere it cannot do harm.</b></p>
-        </div>
-        <div class="card qa">
-          <h3>What is a "turn"?</h3>
-          <p class="a">One trip round the loop: the model is called once, and either asks for tools or gives its answer. Ask for a tool, run it, call the model again — that is a <b>second turn</b>. Counting them is how you cap a runaway, and how a resumed run knows which trip it was on when the lights went out.</p>
-        </div>
-      </div>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
-      <h2>Check yourself &#8212; the fine print</h2>
-      <p class="lead">Two about what you tell it, and what it costs you.</p>
-      <div class="cols">
-        <div class="card qa">
-          <h3>What is a system prompt, and what goes in it?</h3>
-          <p class="a">The standing instructions the <b>builder</b> gives the agent, separate from anything the user types: who it is, what it knows about the person it is talking to, how to behave, how to handle the work. They run to thousands of tokens and can eat a serious share of the context window — which is why the fact store lives outside it.</p>
-        </div>
-        <div class="card qa">
-          <h3>Why must a durable step be safe to run twice?</h3>
-          <p class="a">Because it will be. The save happens after the step, so a crash in that gap re-runs it — you get <b>at least once</b>, not exactly once. Fine for "work out the total". Not fine for "send the money". Make the action repeat-safe, usually with a key the other end deduplicates on, because no amount of cleverness in the checkpoint fixes it.</p>
-        </div>
-      </div>
-    `,
-    notes: ""
-  },
-
-  {
-    html: `
-
-      <h2>Check yourself &#8212; the fine print, continued</h2>
-      <p class="lead">Two about what reaches the person.</p>
-      <div class="cols">
-        <div class="card qa">
-          <h3>Why stream the text instead of waiting for all of it?</h3>
-          <p class="a">Because a long answer with nothing on screen looks broken. Streaming shows the words as they are produced, so the wait feels like progress rather than a hang — and the reader can stop it early when it is already going wrong. The total time is the same; the <b>experience</b> is not. <span class="k">This repo does not stream</span> — its API answers in one go.</p>
-        </div>
-        <div class="card qa">
-          <h3>Why not just give an agent a "send reply" tool?</h3>
-          <p class="a">Because it will use it. Tell an agent its job is to reply to your email and it will send every draft it wrote, immediately, to finish the task — unreviewed, to real people, in your name. Drafting is safe; sending is not. <b>That line is exactly where pattern 7 goes.</b></p>
-        </div>
-      </div>
     `,
     notes: ""
   },
