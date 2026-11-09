@@ -386,9 +386,15 @@ Four traps this code has already fallen into — all of them fail *silently* and
 
 ### Deploying the published deck
 
-Live at **https://harness-engineering-talk.vercel.app** (Vercel project
-`harness-engineering-talk`, team `clearroute`). Production is public; previews are team-only
-via `ssoProtection: preview`.
+Live at **https://harness-engineering-talk-theta.vercel.app** (Vercel project
+`harness-engineering-talk`, personal scope `pratik-dhanave-s-projects`,
+`prj_mOJ3T2BEpuXxjPelXBIaFTTFaKQi`). The old canonical URL
+**harness-engineering-talk.vercel.app** is stranded: it belongs to a project on the
+`clearroute` team, and as of 9 Nov 2026 this account is no longer a member of that team
+(the Vercel API returns "Team not found" even for an authorization request), so that URL
+still serves the pre-merge ClearRoute-branded deck and cannot be updated or repointed from
+here. Reclaiming it needs someone with clearroute-team access to delete or rename the old
+project; until then, hand out the `-theta` URL.
 
 **Do not run `vercel deploy` from inside `public/`.** It has failed 4/4 times — the CLI either
 hangs at status `UNKNOWN` for 25+ minutes on nine static files, or dies with `fetch failed`,
